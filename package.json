@@ -4,7 +4,6 @@
     "description": "Testing for the sub-packages",
     "main": "index.js",
     "scripts": {
-        "lint": "eslint '**/*.{js,ts}' --fix",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Corentin Girard",
