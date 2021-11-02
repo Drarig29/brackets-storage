@@ -23,14 +23,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Drarig29/brackets-memory-db.git"
+        "url": "git+https://github.com/Drarig29/brackets-storage.git"
     },
     "author": "Corentin Girard",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Drarig29/brackets-memory-db/issues"
+        "url": "https://github.com/Drarig29/brackets-storage/issues"
     },
-    "homepage": "https://github.com/Drarig29/brackets-memory-db#readme",
+    "homepage": "https://github.com/Drarig29/brackets-storage#readme",
     "devDependencies": {
         "typescript": "^4.4.4"
     },
