@@ -1,0 +1,40 @@
+{
+    "name": "brackets-memory-db",
+    "version": "0.1.0",
+    "description": "An in-memory database for brackets-manager.js",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "keywords": [
+        "types",
+        "model",
+        "brackets",
+        "tournament",
+        "manager",
+        "storage",
+        "memory"
+    ],
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build",
+        "prepublishOnly": "npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Drarig29/brackets-memory-db.git"
+    },
+    "author": "Corentin Girard",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Drarig29/brackets-memory-db/issues"
+    },
+    "homepage": "https://github.com/Drarig29/brackets-memory-db#readme",
+    "devDependencies": {
+        "typescript": "^4.4.4"
+    },
+    "peerDependencies": {
+        "brackets-manager": "^1.3.8"
+    }
+}
