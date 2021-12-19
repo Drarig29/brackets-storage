@@ -1,6 +1,6 @@
 # brackets-storage
 
-This repository contains published packages and examples of [`CrudInterface`](https://github.com/Drarig29/brackets-manager.js/blob/625bf3477281d12dc580d2f922cf9f2602f9dd96/src/types.ts#L126-L201) implementations.
+This repository contains published packages and examples of [`CrudInterface`](https://drarig29.github.io/brackets-docs/reference/manager/interfaces/CrudInterface.html) implementations.
 
 ## Published packages
 
