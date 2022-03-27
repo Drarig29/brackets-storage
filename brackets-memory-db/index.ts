@@ -220,7 +220,7 @@ export class InMemoryDatabase implements CrudInterface {
             for (const key in value) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                existing[key] = value[key];
+                Object.assign(existing[key], value[key]);
             }
             this.data[table][v.id] = existing;
         });
