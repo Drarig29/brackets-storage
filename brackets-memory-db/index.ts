@@ -1,4 +1,7 @@
+import * as rfdc from 'rfdc';
 import { CrudInterface, OmitId, Table, Database } from 'brackets-manager';
+
+const clone = rfdc();
 
 export class InMemoryDatabase implements CrudInterface {
     protected data: Database = {
@@ -129,7 +132,7 @@ export class InMemoryDatabase implements CrudInterface {
                 return new Promise<T[]>((resolve) => {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                    resolve(this.data[table]);
+                    resolve(this.data[table].map(clone));
                 });
             }
 
@@ -137,14 +140,14 @@ export class InMemoryDatabase implements CrudInterface {
                 return new Promise<T[]>((resolve) => {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                    resolve(this.data[table][arg]);
+                    resolve(clone(this.data[table][arg]));
                 });
             }
 
             return new Promise<T[] | null>((resolve) => {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                resolve(this.data[table].filter(this.makeFilter(arg)) || null);
+                resolve(this.data[table].filter(this.makeFilter(arg))).map(clone);
             });
         } catch (error) {
             return new Promise<null>((resolve) => {
