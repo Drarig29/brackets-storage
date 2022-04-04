@@ -71,7 +71,6 @@ export class InMemoryDatabase implements CrudInterface {
 
         if (!Array.isArray(values)) {
             try {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 this.data[table].push({ id, ...values });
             } catch (error) {
@@ -86,7 +85,6 @@ export class InMemoryDatabase implements CrudInterface {
 
         try {
             values.map((object) => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 this.data[table].push({ id: id++, ...object });
             });
@@ -130,7 +128,6 @@ export class InMemoryDatabase implements CrudInterface {
         try {
             if (arg === undefined) {
                 return new Promise<T[]>((resolve) => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     resolve(this.data[table].map(clone));
                 });
@@ -138,14 +135,12 @@ export class InMemoryDatabase implements CrudInterface {
 
             if (typeof arg === 'number') {
                 return new Promise<T[]>((resolve) => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     resolve(clone(this.data[table][arg]));
                 });
             }
 
             return new Promise<T[] | null>((resolve) => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 resolve(this.data[table].filter(this.makeFilter(arg))).map(clone);
             });
@@ -193,7 +188,6 @@ export class InMemoryDatabase implements CrudInterface {
     ): Promise<boolean> {
         if (typeof arg === 'number') {
             try {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 this.data[table][arg] = value;
                 return new Promise<boolean>((resolve) => {
@@ -206,7 +200,6 @@ export class InMemoryDatabase implements CrudInterface {
             }
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const values = this.data[table].filter(this.makeFilter(arg));
         if (!values) {
@@ -218,9 +211,13 @@ export class InMemoryDatabase implements CrudInterface {
         values.forEach((v: { id: any }) => {
             const existing = this.data[table][v.id];
             for (const key in value) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                Object.assign(existing[key], value[key]);
+                if (typeof value[key] === 'object') {
+                    // @ts-ignore
+                    Object.assign(existing[key], value[key]); // For opponent objects, this does a deep merge of level 2.
+                } else {
+                    // @ts-ignore
+                    existing[key] = value[key]; // Otherwise, do a simple value assignment.
+                }
             }
             this.data[table][v.id] = existing;
         });
@@ -269,7 +266,6 @@ export class InMemoryDatabase implements CrudInterface {
         const predicate = this.makeFilter(filter);
         const negativeFilter = (value: any): boolean => !predicate(value);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.data[table] = values.filter(negativeFilter);
 
