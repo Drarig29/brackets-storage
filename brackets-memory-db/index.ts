@@ -66,8 +66,9 @@ export class InMemoryDatabase implements CrudInterface {
         table: Table,
         values: OmitId<T> | OmitId<T>[],
     ): Promise<number> | Promise<boolean> {
-        let id: number;
-        id = this.data[table].length;
+        let id = this.data[table].length > 0
+            ? (Math.max(...this.data[table].map(d => d.id)) + 1)
+            : 0;
 
         if (!Array.isArray(values)) {
             try {
@@ -136,13 +137,13 @@ export class InMemoryDatabase implements CrudInterface {
             if (typeof arg === 'number') {
                 return new Promise<T[]>((resolve) => {
                     // @ts-ignore
-                    resolve(clone(this.data[table][arg]));
+                    resolve(clone(this.data[table].find(d => d.id === arg)));
                 });
             }
 
             return new Promise<T[] | null>((resolve) => {
                 // @ts-ignore
-                resolve(this.data[table].filter(this.makeFilter(arg))).map(clone);
+                resolve(this.data[table].filter(this.makeFilter(arg)).map(clone));
             });
         } catch (error) {
             return new Promise<null>((resolve) => {
