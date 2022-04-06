@@ -211,7 +211,8 @@ export class InMemoryDatabase implements CrudInterface {
         values.forEach((v: { id: any }) => {
             const existing = this.data[table][v.id];
             for (const key in value) {
-                if (typeof value[key] === 'object') {
+                // @ts-ignore
+                if (existing[key] && typeof existing[key] === 'object' && typeof value[key] === 'object') {
                     // @ts-ignore
                     Object.assign(existing[key], value[key]); // For opponent objects, this does a deep merge of level 2.
                 } else {
