@@ -178,6 +178,8 @@ export class JsonDatabase implements CrudInterface {
 
             if (typeof arg === 'number') {
                 const index = this.internal.getIndex(JsonDatabase.makePath(table), arg);
+                if (index === -1) return null;
+
                 return clone(this.internal.getData(JsonDatabase.makeArrayIndexPath(table, index)));
             }
 
@@ -217,6 +219,8 @@ export class JsonDatabase implements CrudInterface {
         if (typeof arg === 'number') {
             try {
                 const index = this.internal.getIndex(JsonDatabase.makePath(table), arg);
+                if (index === -1) return false;
+
                 this.internal.push(JsonDatabase.makeArrayIndexPath(table, index), value);
                 return true;
             } catch (error) {
