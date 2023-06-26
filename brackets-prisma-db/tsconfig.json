@@ -6,5 +6,5 @@
         "outDir": "./dist",
         "strict": true
     },
-    "include": ["src/**/*", "storage.ts"]
+    "include": ["src/**/*"]
 }
