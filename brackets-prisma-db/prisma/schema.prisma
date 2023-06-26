@@ -51,9 +51,9 @@ enum MatchResult {
   LOSS
 }
 
-//  |-------------------------------------------------------------------------|
-//  | Contains the rest of the types which doesn't belong to the other files.
-//  |-------------------------------------------------------------------------|
+//  |-----------------------------------------------------------------------|
+//  | Contains the rest of the types which don't belong to the other files.
+//  |-----------------------------------------------------------------------|
 
 // The possible status for a match.
 enum MatchStatus {
@@ -70,8 +70,6 @@ enum MatchStatus {
   // At least one participant completed his following match.
   ARCHIVED
 }
-
-// Int       @id @default(autoincrement())
 
 // The results of a participant in a match.
 model ParticipantMatchResult {
@@ -149,8 +147,6 @@ model Stage {
   type StageType
 
   // Settings of the stage
-  // stageSettingsId String        @unique @db.Uuid
-  // settings        StageSettings @relation(fields: [stageSettingsId], references: [id])
   settings StageSettings?
 
   // The number of the stage in its tournament
