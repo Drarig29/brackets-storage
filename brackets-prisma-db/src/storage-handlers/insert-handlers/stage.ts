@@ -1,8 +1,5 @@
 import { DataTypes, OmitId } from 'brackets-manager/dist/types';
-import {
-    StageTransformer,
-    StageSettingsTransformer,
-} from '../../transformers/';
+import { StageTransformer, StageSettingsTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 
 export function handleStageInsert(

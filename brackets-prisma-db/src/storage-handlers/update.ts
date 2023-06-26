@@ -6,7 +6,7 @@ import {
     handleParticipantUpdate,
     handleRoundUpdate,
     handleStageUpdate,
-} from './update_handlers';
+} from './update-handlers';
 import { PrismaClient } from '@prisma/client';
 
 export async function handleUpdate<T extends keyof DataTypes>(

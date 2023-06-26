@@ -5,7 +5,7 @@ import {
     handleDelete,
     handleUpdate,
     handleSelect,
-} from './storage_handlers';
+} from './storage-handlers';
 import { PrismaClient } from '@prisma/client';
 
 export class SqlDatabase implements CrudInterface {

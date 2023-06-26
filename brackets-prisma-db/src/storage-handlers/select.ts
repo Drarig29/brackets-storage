@@ -6,7 +6,7 @@ import {
     handleParticipantSelect,
     handleRoundSelect,
     handleStageSelect,
-} from './select_handlers';
+} from './select-handlers';
 import { PrismaClient } from '@prisma/client';
 
 export async function handleSelect<T extends keyof DataTypes>(

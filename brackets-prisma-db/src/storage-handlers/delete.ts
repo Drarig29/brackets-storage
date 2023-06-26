@@ -6,7 +6,7 @@ import {
     handleParticipantDelete,
     handleRoundDelete,
     handleStageDelete,
-} from './delete_handlers';
+} from './delete-handlers';
 import { PrismaClient } from '@prisma/client';
 
 // Can't be named `delete` because its a reserved word...

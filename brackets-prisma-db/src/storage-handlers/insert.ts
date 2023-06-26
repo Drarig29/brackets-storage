@@ -6,7 +6,7 @@ import {
     handleRoundInsert,
     handleMatchGameInsert,
     handleMatchInsert,
-} from './insert_handlers';
+} from './insert-handlers';
 import { PrismaClient } from '@prisma/client';
 
 export async function handleInsert<T extends keyof DataTypes>(
