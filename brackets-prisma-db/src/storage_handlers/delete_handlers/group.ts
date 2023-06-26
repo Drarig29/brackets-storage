@@ -10,7 +10,7 @@ export async function handleGroupDelete(
         return prisma.group
             .deleteMany({})
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.group
@@ -22,5 +22,5 @@ export async function handleGroupDelete(
             },
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

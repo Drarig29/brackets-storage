@@ -22,7 +22,7 @@ export function handleStageInsert(
                 })),
             })
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.stage
@@ -37,5 +37,5 @@ export function handleStageInsert(
             },
         })
         .then((v) => v.id)
-        .catch((e) => -1);
+        .catch(() => -1);
 }

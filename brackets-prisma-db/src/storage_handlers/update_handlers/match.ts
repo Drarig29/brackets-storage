@@ -78,7 +78,7 @@ export async function handleMatchUpdate(
         // Update by Id
         return updateById(prisma, filter, value)
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.match
@@ -100,5 +100,5 @@ export async function handleMatchUpdate(
             ]);
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

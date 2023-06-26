@@ -11,7 +11,7 @@ export async function handleMatchDelete(
         return prisma.match
             .deleteMany({})
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.match
@@ -28,5 +28,5 @@ export async function handleMatchDelete(
             },
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

@@ -20,7 +20,7 @@ export async function handleRoundUpdate(
                 },
             })
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     // Update by filter
@@ -39,5 +39,5 @@ export async function handleRoundUpdate(
             },
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

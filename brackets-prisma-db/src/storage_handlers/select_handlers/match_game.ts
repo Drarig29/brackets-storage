@@ -19,7 +19,7 @@ export async function handleMatchGameSelect(
                 },
             })
             .then((values) => values.map(MatchGameTransformer.from))
-            .catch((e) => []);
+            .catch(() => []);
     }
 
     if (typeof filter === 'number') {
@@ -39,7 +39,7 @@ export async function handleMatchGameSelect(
 
                 return MatchGameTransformer.from(value);
             })
-            .catch((e) => null);
+            .catch(() => null);
     }
 
     return prisma.matchGame
@@ -59,5 +59,5 @@ export async function handleMatchGameSelect(
             },
         })
         .then((values) => values.map(MatchGameTransformer.from))
-        .catch((e) => []);
+        .catch(() => []);
 }

@@ -19,7 +19,7 @@ export async function handleGroupUpdate(
                 },
             })
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     // Update by filter
@@ -36,5 +36,5 @@ export async function handleGroupUpdate(
             },
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

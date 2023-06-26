@@ -11,7 +11,7 @@ export async function handleRoundSelect(
         return prisma.round
             .findMany()
             .then((values) => values.map(RoundTransformer.from))
-            .catch((e) => []);
+            .catch(() => []);
     }
 
     if (typeof filter === 'number') {
@@ -27,7 +27,7 @@ export async function handleRoundSelect(
 
                 return RoundTransformer.from(value);
             })
-            .catch((e) => null);
+            .catch(() => null);
     }
 
     return prisma.round
@@ -40,5 +40,5 @@ export async function handleRoundSelect(
             },
         })
         .then((values) => values.map(RoundTransformer.from))
-        .catch((e) => []);
+        .catch(() => []);
 }

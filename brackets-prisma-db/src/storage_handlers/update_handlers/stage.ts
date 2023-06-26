@@ -64,5 +64,5 @@ export async function handleStageUpdate(
             },
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

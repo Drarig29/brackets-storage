@@ -12,7 +12,7 @@ export function handleRoundInsert(
                 data: values.map(RoundTransformer.to),
             })
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.round
@@ -20,5 +20,5 @@ export function handleRoundInsert(
             data: RoundTransformer.to(values),
         })
         .then((v) => v.id)
-        .catch((e) => -1);
+        .catch(() => -1);
 }

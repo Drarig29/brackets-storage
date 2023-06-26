@@ -11,7 +11,7 @@ export async function handleGroupSelect(
         return prisma.group
             .findMany()
             .then((values) => values.map(GroupTransformer.from))
-            .catch((e) => []);
+            .catch(() => []);
     }
 
     if (typeof filter === 'number') {
@@ -27,7 +27,7 @@ export async function handleGroupSelect(
 
                 return GroupTransformer.from(value);
             })
-            .catch((e) => null);
+            .catch(() => null);
     }
 
     return prisma.group
@@ -39,5 +39,5 @@ export async function handleGroupSelect(
             },
         })
         .then((values) => values.map(GroupTransformer.from))
-        .catch((e) => []);
+        .catch(() => []);
 }

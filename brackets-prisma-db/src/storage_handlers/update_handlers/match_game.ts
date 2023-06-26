@@ -79,7 +79,7 @@ export async function handleMatchGameUpdate(
         // Update by Id
         return updateById(prisma, filter, value)
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.matchGame
@@ -100,5 +100,5 @@ export async function handleMatchGameUpdate(
             ]);
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

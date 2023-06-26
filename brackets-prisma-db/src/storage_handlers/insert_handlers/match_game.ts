@@ -52,7 +52,7 @@ export function handleMatchGameInsert(
                 data: values.map((v) => getCreationData(v)),
             })
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.matchGame
@@ -60,5 +60,5 @@ export function handleMatchGameInsert(
             data: getCreationData(values),
         })
         .then((v) => v.id)
-        .catch((e) => -1);
+        .catch(() => -1);
 }

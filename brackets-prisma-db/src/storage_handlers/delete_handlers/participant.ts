@@ -10,7 +10,7 @@ export async function handleParticipantDelete(
         return prisma.participant
             .deleteMany({})
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.participant
@@ -22,5 +22,5 @@ export async function handleParticipantDelete(
             },
         })
         .then(() => true)
-        .catch((e) => false);
+        .catch(() => false);
 }

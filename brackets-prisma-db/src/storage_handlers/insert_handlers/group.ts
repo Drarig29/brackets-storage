@@ -12,7 +12,7 @@ export function handleGroupInsert(
                 data: values.map(GroupTransformer.to),
             })
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
     }
 
     return prisma.group
@@ -20,5 +20,5 @@ export function handleGroupInsert(
             data: GroupTransformer.to(values),
         })
         .then((v) => v.id)
-        .catch((e) => -1);
+        .catch(() => -1);
 }
