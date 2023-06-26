@@ -28,3 +28,12 @@ If you have an existing `schema.prisma` in your project copy and paste the schem
 
 Next generate the prisma client using `npx prisma generate`.
 Lastly push the definition to your database using `npx prisma db push`.
+
+```typescript
+import { SqlDatabase } from 'brackets-prisma-db';
+import { prisma } from './client';
+import { BracketsManager } from 'brackets-manager';
+
+const storage = new SqlDatabase(prisma);
+const manager = new BracketsManager(storage);
+```
