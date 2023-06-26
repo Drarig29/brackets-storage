@@ -4,22 +4,22 @@ import { Transformer } from '../transformer';
 import { OmitId } from 'brackets-manager';
 
 export const GroupTransformer = {
-  to(input) {
-    return {
-      stageId: input.stage_id,
-      number: input.number,
-    };
-  },
-  from(output) {
-    return {
-      id: output.id,
-      stage_id: output.stageId,
-      number: output.number,
-    };
-  },
+    to(input) {
+        return {
+            stageId: input.stage_id,
+            number: input.number,
+        };
+    },
+    from(output) {
+        return {
+            id: output.id,
+            stage_id: output.stageId,
+            number: output.number,
+        };
+    },
 } satisfies Transformer<
-  OmitId<Group>,
-  OmitId<Prisma.Group>,
-  Prisma.Group,
-  Group
+    OmitId<Group>,
+    OmitId<Prisma.Group>,
+    Prisma.Group,
+    Group
 >;
