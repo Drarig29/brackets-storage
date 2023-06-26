@@ -4,7 +4,8 @@ This repository contains published packages and examples of [`CrudInterface`](ht
 
 ## Published packages
 
-| Package            |                                                                                                             |
-| -----------------: |-------------------------------------------------------------------------------------------------------------|
-| brackets-json-db   | [![npm](https://img.shields.io/npm/v/brackets-json-db.svg)](https://www.npmjs.com/package/brackets-json-db) |
+|            Package |                                                                                                                 |
+| -----------------: | --------------------------------------------------------------------------------------------------------------- |
+|   brackets-json-db | [![npm](https://img.shields.io/npm/v/brackets-json-db.svg)](https://www.npmjs.com/package/brackets-json-db)     |
 | brackets-memory-db | [![npm](https://img.shields.io/npm/v/brackets-memory-db.svg)](https://www.npmjs.com/package/brackets-memory-db) |
+| brackets-prisma-db | [![npm](https://img.shields.io/npm/v/brackets-prisma-db.svg)](https://www.npmjs.com/package/brackets-prisma-db) |
