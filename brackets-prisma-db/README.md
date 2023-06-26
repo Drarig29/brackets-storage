@@ -12,7 +12,7 @@ Currently there are some features of the [manager](https://github.com/Drarig29/b
 
 | **Feature**         | **Status**      |
 | ------------------- | --------------- |
-| Custom Participants | Not Implemented |
+| Custom Participants | Implemented     |
 | Custom Matches      | Not Implemented |
 
 ## Usage
