@@ -46,10 +46,7 @@ export function handleMatchInsert(
                 data: values.map((v) => getCreationData(v)),
             })
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.match
@@ -57,8 +54,5 @@ export function handleMatchInsert(
             data: getCreationData(values),
         })
         .then((v) => v.id)
-        .catch((e) => {
-            console.error(e);
-            return -1;
-        });
+        .catch((e) => -1);
 }

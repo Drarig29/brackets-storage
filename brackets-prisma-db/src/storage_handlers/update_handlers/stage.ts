@@ -64,8 +64,5 @@ export async function handleStageUpdate(
             },
         })
         .then(() => true)
-        .catch((e) => {
-            console.error(e);
-            return false;
-        });
+        .catch((e) => false);
 }

@@ -10,10 +10,7 @@ export async function handleRoundDelete(
         return prisma.round
             .deleteMany({})
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.round
@@ -26,8 +23,5 @@ export async function handleRoundDelete(
             },
         })
         .then(() => true)
-        .catch((e) => {
-            console.error(e);
-            return false;
-        });
+        .catch((e) => false);
 }

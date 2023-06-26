@@ -30,10 +30,7 @@ export async function handleStageSelect(
                     );
                 }),
             )
-            .catch((e) => {
-                console.error(e);
-                return [];
-            });
+            .catch((e) => []);
     }
 
     if (typeof filter === 'number') {
@@ -60,10 +57,7 @@ export async function handleStageSelect(
                     value as Prisma.Stage & { settings: Prisma.StageSettings },
                 );
             })
-            .catch((e) => {
-                console.error(e);
-                return null;
-            });
+            .catch((e) => null);
     }
 
     return prisma.stage
@@ -94,8 +88,5 @@ export async function handleStageSelect(
                 );
             }),
         )
-        .catch((e) => {
-            console.error(e);
-            return [];
-        });
+        .catch((e) => []);
 }

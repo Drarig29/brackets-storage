@@ -11,10 +11,7 @@ export async function handleStageDelete(
         return prisma.stage
             .deleteMany({})
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.stage
@@ -30,8 +27,5 @@ export async function handleStageDelete(
             },
         })
         .then(() => true)
-        .catch((e) => {
-            console.error(e);
-            return false;
-        });
+        .catch((e) => false);
 }

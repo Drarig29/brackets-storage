@@ -16,10 +16,7 @@ export async function handleMatchSelect(
                 },
             })
             .then((values) => values.map(MatchTransformer.from))
-            .catch((e) => {
-                console.error(e);
-                return [];
-            });
+            .catch((e) => []);
     }
 
     if (typeof filter === 'number') {
@@ -39,10 +36,7 @@ export async function handleMatchSelect(
 
                 return MatchTransformer.from(value);
             })
-            .catch((e) => {
-                console.error(e);
-                return null;
-            });
+            .catch((e) => null);
     }
 
     return prisma.match
@@ -64,8 +58,5 @@ export async function handleMatchSelect(
             },
         })
         .then((values) => values.map(MatchTransformer.from))
-        .catch((e) => {
-            console.error(e);
-            return [];
-        });
+        .catch((e) => []);
 }

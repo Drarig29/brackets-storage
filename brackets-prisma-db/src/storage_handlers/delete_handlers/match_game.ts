@@ -11,10 +11,7 @@ export async function handleMatchGameDelete(
         return prisma.matchGame
             .deleteMany({})
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.matchGame
@@ -30,8 +27,5 @@ export async function handleMatchGameDelete(
             },
         })
         .then(() => true)
-        .catch((e) => {
-            console.error(e);
-            return false;
-        });
+        .catch((e) => false);
 }

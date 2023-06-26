@@ -20,10 +20,7 @@ export async function handleRoundUpdate(
                 },
             })
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     // Update by filter
@@ -42,8 +39,5 @@ export async function handleRoundUpdate(
             },
         })
         .then(() => true)
-        .catch((e) => {
-            console.error(e);
-            return false;
-        });
+        .catch((e) => false);
 }

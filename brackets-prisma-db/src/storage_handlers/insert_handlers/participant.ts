@@ -14,10 +14,7 @@ export function handleParticipantInsert(
                 data: values.map(ParticipantTransformer.to),
             })
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.participant
@@ -25,8 +22,5 @@ export function handleParticipantInsert(
             data: ParticipantTransformer.to(values),
         })
         .then((v) => v.id)
-        .catch((e) => {
-            console.error(e);
-            return -1;
-        });
+        .catch((e) => -1);
 }

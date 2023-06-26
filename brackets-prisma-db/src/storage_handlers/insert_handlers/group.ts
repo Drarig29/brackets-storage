@@ -12,10 +12,7 @@ export function handleGroupInsert(
                 data: values.map(GroupTransformer.to),
             })
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.group
@@ -23,8 +20,5 @@ export function handleGroupInsert(
             data: GroupTransformer.to(values),
         })
         .then((v) => v.id)
-        .catch((e) => {
-            console.error(e);
-            return -1;
-        });
+        .catch((e) => -1);
 }

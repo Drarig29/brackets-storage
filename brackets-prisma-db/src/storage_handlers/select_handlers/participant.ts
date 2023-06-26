@@ -11,10 +11,7 @@ export async function handleParticipantSelect(
         return prisma.participant
             .findMany()
             .then((values) => values.map(ParticipantTransformer.from))
-            .catch((e) => {
-                console.error(e);
-                return [];
-            });
+            .catch((e) => []);
     }
 
     if (typeof filter === 'number') {
@@ -30,10 +27,7 @@ export async function handleParticipantSelect(
 
                 return ParticipantTransformer.from(value);
             })
-            .catch((e) => {
-                console.error(e);
-                return null;
-            });
+            .catch((e) => null);
     }
 
     return prisma.participant
@@ -45,8 +39,5 @@ export async function handleParticipantSelect(
             },
         })
         .then((values) => values.map(ParticipantTransformer.from))
-        .catch((e) => {
-            console.error(e);
-            return [];
-        });
+        .catch((e) => []);
 }

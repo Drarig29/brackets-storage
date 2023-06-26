@@ -22,10 +22,7 @@ export function handleStageInsert(
                 })),
             })
             .then(() => true)
-            .catch((e) => {
-                console.error(e);
-                return false;
-            });
+            .catch((e) => false);
     }
 
     return prisma.stage
@@ -40,8 +37,5 @@ export function handleStageInsert(
             },
         })
         .then((v) => v.id)
-        .catch((e) => {
-            console.error(e);
-            return -1;
-        });
+        .catch((e) => -1);
 }
