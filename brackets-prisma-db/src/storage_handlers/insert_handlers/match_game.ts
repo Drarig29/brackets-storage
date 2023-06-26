@@ -1,10 +1,9 @@
 import { DataTypes, OmitId } from 'brackets-manager/dist/types';
-import { prisma } from '../../client';
 import {
   MatchGameTransformer,
   MatchResultTransformer,
 } from '../../transformers';
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 function getCreationData(
   value: OmitId<DataTypes['match_game']>,
@@ -44,27 +43,28 @@ function getCreationData(
 }
 
 export function handleMatchGameInsert(
-  values: OmitId<DataTypes['match_game']> | OmitId<DataTypes['match_game']>[],
+    prisma: PrismaClient,
+    values: OmitId<DataTypes['match_game']> | OmitId<DataTypes['match_game']>[],
 ): Promise<number> | Promise<boolean> {
-  if (Array.isArray(values)) {
-    return prisma.matchGame
-      .createMany({
-        data: values.map((v) => getCreationData(v)),
-      })
-      .then(() => true)
-      .catch((e) => {
-        console.error(e);
-        return false;
-      });
-  }
+    if (Array.isArray(values)) {
+        return prisma.matchGame
+            .createMany({
+                data: values.map((v) => getCreationData(v)),
+            })
+            .then(() => true)
+            .catch((e) => {
+                console.error(e);
+                return false;
+            });
+    }
 
-  return prisma.matchGame
-    .create({
-      data: getCreationData(values),
-    })
-    .then((v) => v.id)
-    .catch((e) => {
-      console.error(e);
-      return -1;
-    });
+    return prisma.matchGame
+        .create({
+            data: getCreationData(values),
+        })
+        .then((v) => v.id)
+        .catch((e) => {
+            console.error(e);
+            return -1;
+        });
 }

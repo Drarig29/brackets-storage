@@ -1,38 +1,40 @@
 import { DataTypes } from 'brackets-manager/dist/types';
 import {
-  handleGroupDelete,
-  handleMatchDelete,
-  handleMatchGameDelete,
-  handleParticipantDelete,
-  handleRoundDelete,
-  handleStageDelete,
+    handleGroupDelete,
+    handleMatchDelete,
+    handleMatchGameDelete,
+    handleParticipantDelete,
+    handleRoundDelete,
+    handleStageDelete,
 } from './delete_handlers';
+import { PrismaClient } from '@prisma/client';
 
 // Can't be named `delete` because its a reserved word...
 export async function handleDelete<T extends keyof DataTypes>(
-  table: T,
-  filter?: Partial<DataTypes[T]>,
+    prisma: PrismaClient,
+    table: T,
+    filter?: Partial<DataTypes[T]>,
 ): Promise<boolean> {
-  switch (table) {
-    case 'participant':
-      return handleParticipantDelete(filter);
+    switch (table) {
+        case 'participant':
+            return handleParticipantDelete(prisma, filter);
 
-    case 'stage':
-      return handleStageDelete(filter);
+        case 'stage':
+            return handleStageDelete(prisma, filter);
 
-    case 'group':
-      return handleGroupDelete(filter);
+        case 'group':
+            return handleGroupDelete(prisma, filter);
 
-    case 'round':
-      return handleRoundDelete(filter);
+        case 'round':
+            return handleRoundDelete(prisma, filter);
 
-    case 'match':
-      return handleMatchDelete(filter);
+        case 'match':
+            return handleMatchDelete(prisma, filter);
 
-    case 'match_game':
-      return handleMatchGameDelete(filter);
+        case 'match_game':
+            return handleMatchGameDelete(prisma, filter);
 
-    default:
-      return false;
-  }
+        default:
+            return false;
+    }
 }

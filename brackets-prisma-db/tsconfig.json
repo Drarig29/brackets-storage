@@ -1,10 +1,10 @@
 {
-  "compilerOptions": {
-    "module": "NodeNext",
-    "target": "ES2022",
-    "declaration": true,
-    "outDir": "./dist",
-    "strict": true
-  },
-  "include": ["src/**/*"]
+    "compilerOptions": {
+        "module": "NodeNext",
+        "target": "ES2022",
+        "declaration": true,
+        "outDir": "./dist",
+        "strict": true
+    },
+    "include": ["src/**/*", "storage.ts"]
 }
