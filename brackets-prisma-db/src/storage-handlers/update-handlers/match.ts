@@ -95,9 +95,9 @@ export async function handleMatchUpdate(
             },
         })
         .then((matches) => {
-            return Promise.all([
+            return Promise.all(
                 matches.map((match) => updateById(prisma, match.id, value)),
-            ]);
+            );
         })
         .then(() => true)
         .catch(() => false);
