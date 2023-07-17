@@ -14,6 +14,14 @@ export async function handleMatchSelect(
                     opponent1Result: true,
                     opponent2Result: true,
                 },
+                orderBy: [
+                    {
+                        round: {
+                            number: 'asc',
+                        },
+                    },
+                    { number: 'asc' },
+                ],
             })
             .then((values) => values.map(MatchTransformer.from))
             .catch(() => []);
@@ -56,6 +64,14 @@ export async function handleMatchSelect(
                 opponent1Result: true,
                 opponent2Result: true,
             },
+            orderBy: [
+                {
+                    round: {
+                        number: 'asc',
+                    },
+                },
+                { number: 'asc' },
+            ],
         })
         .then((values) => values.map(MatchTransformer.from))
         .catch(() => []);

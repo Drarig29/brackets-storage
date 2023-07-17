@@ -9,7 +9,9 @@ export async function handleGroupSelect(
     if (filter === undefined) {
         // Query all entries of table
         return prisma.group
-            .findMany()
+            .findMany({
+                orderBy: [{ number: 'asc' }],
+            })
             .then((values) => values.map(GroupTransformer.from))
             .catch(() => []);
     }
@@ -37,6 +39,7 @@ export async function handleGroupSelect(
                 stageId: filter.stage_id,
                 number: filter.number,
             },
+            orderBy: [{ number: 'asc' }],
         })
         .then((values) => values.map(GroupTransformer.from))
         .catch(() => []);

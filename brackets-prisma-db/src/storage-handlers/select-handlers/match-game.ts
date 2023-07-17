@@ -17,6 +17,7 @@ export async function handleMatchGameSelect(
                     opponent1Result: true,
                     opponent2Result: true,
                 },
+                orderBy: [{ number: 'asc' }],
             })
             .then((values) => values.map(MatchGameTransformer.from))
             .catch(() => []);
@@ -57,6 +58,7 @@ export async function handleMatchGameSelect(
                 opponent1Result: true,
                 opponent2Result: true,
             },
+            orderBy: [{ number: 'asc' }],
         })
         .then((values) => values.map(MatchGameTransformer.from))
         .catch(() => []);
