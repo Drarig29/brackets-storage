@@ -9,7 +9,9 @@ export async function handleRoundSelect(
     if (filter === undefined) {
         // Query all entries of table
         return prisma.round
-            .findMany()
+            .findMany({
+                orderBy: [{ number: 'asc' }],
+            })
             .then((values) => values.map(RoundTransformer.from))
             .catch(() => []);
     }
@@ -38,6 +40,7 @@ export async function handleRoundSelect(
                 groupId: filter.group_id,
                 number: filter.number,
             },
+            orderBy: [{ number: 'asc' }],
         })
         .then((values) => values.map(RoundTransformer.from))
         .catch(() => []);

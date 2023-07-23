@@ -14,6 +14,7 @@ export async function handleStageSelect(
                 include: {
                     settings: true,
                 },
+                orderBy: [{ number: 'asc' }],
             })
             .then((values) =>
                 values.map((value) => {
@@ -74,6 +75,7 @@ export async function handleStageSelect(
             include: {
                 settings: true,
             },
+            orderBy: [{ number: 'asc' }],
         })
         .then((values) =>
             values.map((value) => {
