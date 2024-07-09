@@ -1,0 +1,10 @@
+diff --git a/node_modules/brackets-model/dist/unions.d.ts b/node_modules/brackets-model/dist/unions.d.ts
+index 21e62a0..4f69151 100644
+--- a/node_modules/brackets-model/dist/unions.d.ts
++++ b/node_modules/brackets-model/dist/unions.d.ts
+@@ -33,4 +33,4 @@ export type Result = 'win' | 'draw' | 'loss';
+ /**
+  * Depending on your storage system, you might prefer strings or numbers.
+  */
+-export type Id = string | number;
++export type Id = number;
