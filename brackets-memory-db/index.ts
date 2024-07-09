@@ -67,6 +67,7 @@ export class InMemoryDatabase implements CrudInterface {
         values: OmitId<T> | OmitId<T>[],
     ): Promise<number> | Promise<boolean> {
         let id = this.data[table].length > 0
+            // @ts-ignore
             ? (Math.max(...this.data[table].map(d => d.id)) + 1)
             : 0;
 
@@ -189,8 +190,8 @@ export class InMemoryDatabase implements CrudInterface {
     ): Promise<boolean> {
         if (typeof arg === 'number') {
             try {
-                // @ts-ignore
-                this.data[table][arg] = value;
+                const index = this.getEntityIndexById(table, arg);
+                this.setEntityByIndex(table, index, value);
                 return new Promise<boolean>((resolve) => {
                     resolve(true);
                 });
@@ -210,7 +211,8 @@ export class InMemoryDatabase implements CrudInterface {
         }
 
         values.forEach((v: { id: any }) => {
-            const existing = this.data[table][v.id];
+            const index = this.getEntityIndexById(table, v.id);
+            const existing = this.data[table][index];
             for (const key in value) {
                 // @ts-ignore
                 if (existing[key] && typeof existing[key] === 'object' && typeof value[key] === 'object') {
@@ -221,7 +223,7 @@ export class InMemoryDatabase implements CrudInterface {
                     existing[key] = value[key]; // Otherwise, do a simple value assignment.
                 }
             }
-            this.data[table][v.id] = existing;
+            this.setEntityByIndex(table, index, existing);
         });
 
         return new Promise<boolean>((resolve) => {
@@ -274,5 +276,32 @@ export class InMemoryDatabase implements CrudInterface {
         return new Promise<boolean>((resolve) => {
             resolve(true);
         });
+    }
+
+    /**
+     * Find the index of a table entity by its id
+     * 
+     * @param table 
+     * @param id 
+     * @returns 
+     */
+    getEntityIndexById(table: Table, id: number) {
+        const index = this.data[table].findIndex(e => e.id === id);
+        if(index === -1){
+            throw new Error(`Entity in ${table} with id ${id} not found.`)
+        }
+        return index
+    }
+    
+    /**
+     * Set a table entity value by its index 
+     * 
+     * @param table 
+     * @param index 
+     * @param value 
+     */
+    setEntityByIndex<T>(table: Table, index: number, value: T) {
+        // @ts-ignore
+        this.data[table][index] = value;
     }
 }
