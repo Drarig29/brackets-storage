@@ -31,8 +31,11 @@ Lastly push the definition to your database using `npx prisma db push`.
 
 ```typescript
 import { SqlDatabase } from 'brackets-prisma-db';
-import { prisma } from './client';
 import { BracketsManager } from 'brackets-manager';
+import { PrismaClient } from '@prisma/client'
+
+// Your Prisma client
+const prisma = new PrismaClient();
 
 const storage = new SqlDatabase(prisma);
 const manager = new BracketsManager(storage);
