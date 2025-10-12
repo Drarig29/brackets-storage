@@ -34,8 +34,8 @@
     },
     "dependencies": {
         "@prisma/client": "^6.17.1",
-        "brackets-manager": "^1.5.8",
-        "brackets-model": "^1.4.0",
+        "brackets-manager": "1.5.10",
+        "brackets-model": "1.4.0",
         "typescript": "^5.1.3"
     },
     "devDependencies": {
