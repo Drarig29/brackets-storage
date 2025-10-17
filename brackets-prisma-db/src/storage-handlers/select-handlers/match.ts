@@ -1,11 +1,13 @@
 import { DataTypes } from 'brackets-manager/dist/types';
 import { MatchStatusTransformer, MatchTransformer } from '../../transformers';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+
+type MatchWithExtra = DataTypes['match'] & { extra?: Prisma.JsonValue | null };
 
 export async function handleMatchSelect(
     prisma: PrismaClient,
-    filter?: Partial<DataTypes['match']> | number,
-): Promise<DataTypes['match'][] | DataTypes['match'] | null> {
+    filter?: Partial<MatchWithExtra> | number,
+): Promise<MatchWithExtra[] | MatchWithExtra | null> {
     if (filter === undefined) {
         // Query all entries of table
         return prisma.match
