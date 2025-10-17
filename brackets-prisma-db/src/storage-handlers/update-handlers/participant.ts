@@ -1,5 +1,6 @@
 import { DataTypes } from 'brackets-manager/dist/types';
 import { PrismaClient } from '@prisma/client';
+import { participantExtraFromInput } from '../../transformers';
 
 export async function handleParticipantUpdate(
     prisma: PrismaClient,
@@ -16,6 +17,9 @@ export async function handleParticipantUpdate(
                 data: {
                     name: value.name,
                     tournamentId: value.tournament_id,
+                    extra: participantExtraFromInput(
+                        value as Partial<DataTypes['participant']> & Record<string, unknown>,
+                    ),
                 },
             })
             .then(() => true)
@@ -33,6 +37,9 @@ export async function handleParticipantUpdate(
             data: {
                 name: value.name,
                 tournamentId: value.tournament_id,
+                extra: participantExtraFromInput(
+                    value as Partial<DataTypes['participant']> & Record<string, unknown>,
+                ),
             },
         })
         .then(() => true)
