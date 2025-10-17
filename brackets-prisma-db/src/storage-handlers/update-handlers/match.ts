@@ -6,6 +6,8 @@ import {
 import { Prisma, PrismaClient } from '@prisma/client';
 import { ParticipantResult } from 'brackets-model';
 
+type MatchWithExtra = DataTypes['match'] & { extra?: Prisma.JsonValue | null };
+
 function getParticipantResultUpsertData(value: ParticipantResult): {
     upsert:
         | Prisma.ParticipantMatchResultUpsertWithoutOpponent1MatchInput
@@ -36,7 +38,7 @@ function getParticipantResultUpsertData(value: ParticipantResult): {
 }
 
 function getUpdateData(
-    value: Partial<DataTypes['match']> | DataTypes['match'],
+    value: Partial<MatchWithExtra> | MatchWithExtra,
 ): Prisma.XOR<Prisma.MatchUpdateInput, Prisma.MatchUncheckedUpdateInput> {
     return {
         stageId: value.stage_id,
@@ -44,6 +46,7 @@ function getUpdateData(
         roundId: value.round_id,
         childCount: value.child_count,
         number: value.number,
+        extra: value.extra ?? undefined,
         status: value.status
             ? MatchStatusTransformer.to(value.status)
             : undefined,
@@ -59,7 +62,7 @@ function getUpdateData(
 function updateById(
     prisma: PrismaClient,
     id: number,
-    value: Partial<DataTypes['match']> | DataTypes['match'],
+    value: Partial<MatchWithExtra> | MatchWithExtra,
 ) {
     return prisma.match.update({
         where: {
@@ -71,8 +74,8 @@ function updateById(
 
 export async function handleMatchUpdate(
     prisma: PrismaClient,
-    filter: Partial<DataTypes['match']> | number,
-    value: Partial<DataTypes['match']> | DataTypes['match'],
+    filter: Partial<MatchWithExtra> | number,
+    value: Partial<MatchWithExtra> | MatchWithExtra,
 ): Promise<boolean> {
     if (typeof filter === 'number') {
         // Update by Id

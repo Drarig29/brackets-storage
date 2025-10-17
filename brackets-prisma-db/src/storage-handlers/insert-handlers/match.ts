@@ -2,11 +2,14 @@ import { DataTypes, OmitId } from 'brackets-manager/dist/types';
 import { MatchResultTransformer, MatchTransformer } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
 
+type MatchWithExtra = DataTypes['match'] & { extra?: Prisma.JsonValue | null };
+
 function getCreationData(
-    value: OmitId<DataTypes['match']>,
+    value: OmitId<MatchWithExtra>,
 ): Prisma.XOR<Prisma.MatchCreateManyInput, Prisma.MatchUncheckedCreateInput> {
     return {
         ...MatchTransformer.to(value),
+        extra: value.extra ?? undefined,
         opponent1Result: value.opponent1
             ? {
                   create: {
@@ -38,7 +41,7 @@ function getCreationData(
 
 export function handleMatchInsert(
     prisma: PrismaClient,
-    values: OmitId<DataTypes['match']> | OmitId<DataTypes['match']>[],
+    values: OmitId<MatchWithExtra> | OmitId<MatchWithExtra>[],
 ): Promise<number> | Promise<boolean> {
     if (Array.isArray(values)) {
         return prisma.match

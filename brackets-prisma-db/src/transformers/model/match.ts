@@ -4,8 +4,15 @@ import { Transformer } from '../transformer';
 import { OmitId } from 'brackets-manager';
 import { MatchStatusTransformer, ParticipantMatchResultTransformer } from '..';
 
+type MatchWithExtra = Match & { extra?: Prisma.JsonValue | null };
+type PrismaMatchWithRelations = Prisma.Match & {
+    opponent1Result: Prisma.ParticipantMatchResult | null;
+    opponent2Result: Prisma.ParticipantMatchResult | null;
+    extra: Prisma.JsonValue | null;
+};
+
 export const MatchTransformer = {
-    to(input) {
+    to(input: Omit<OmitId<MatchWithExtra>, 'opponent1' | 'opponent2'>) {
         return {
             status: MatchStatusTransformer.to(input.status),
             stageId: input.stage_id,
@@ -13,9 +20,10 @@ export const MatchTransformer = {
             roundId: input.round_id,
             number: input.number,
             childCount: input.child_count,
+            extra: (input as MatchWithExtra).extra ?? undefined,
         };
     },
-    from(output) {
+    from(output: PrismaMatchWithRelations) {
         return {
             id: output.id,
             status: MatchStatusTransformer.from(output.status),
@@ -24,6 +32,7 @@ export const MatchTransformer = {
             round_id: output.roundId,
             number: output.number,
             child_count: output.childCount,
+            extra: output.extra ?? undefined,
             opponent1: output.opponent1Result
                 ? ParticipantMatchResultTransformer.from(output.opponent1Result)
                 : null,
@@ -33,11 +42,10 @@ export const MatchTransformer = {
         };
     },
 } satisfies Transformer<
-    Omit<OmitId<Match>, 'opponent1' | 'opponent2'>,
-    Omit<OmitId<Prisma.Match>, 'opponent1ResultId' | 'opponent2ResultId'>,
-    Prisma.Match & {
-        opponent1Result: Prisma.ParticipantMatchResult | null;
-        opponent2Result: Prisma.ParticipantMatchResult | null;
+    Omit<OmitId<MatchWithExtra>, 'opponent1' | 'opponent2'>,
+    Omit<OmitId<Prisma.Match>, 'opponent1ResultId' | 'opponent2ResultId'> & {
+        extra?: Prisma.JsonValue | null;
     },
-    Match
+    PrismaMatchWithRelations,
+    MatchWithExtra
 >;
