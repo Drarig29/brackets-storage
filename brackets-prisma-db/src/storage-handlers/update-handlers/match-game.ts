@@ -47,9 +47,9 @@ function getUpdateData(
     const extra = matchGameExtraFromInput(extrasInput, previousExtra);
 
     return {
-        stageId: value.stage_id,
-        matchId: value.parent_id,
-        number: value.number,
+        ...(value.stage_id !== undefined ? { stageId: value.stage_id } : {}),
+        ...(value.parent_id !== undefined ? { matchId: value.parent_id } : {}),
+        ...(value.number !== undefined ? { number: value.number } : {}),
         ...(extra !== undefined ? { extra } : {}),
         status: value.status
             ? MatchStatusTransformer.to(value.status)
