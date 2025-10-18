@@ -1,0 +1,1 @@
+ALTER TABLE "MatchGame" ADD COLUMN "extra" JSONB;
