@@ -260,6 +260,9 @@ model MatchGame {
 
   // The number of the match in its round
   number Int
+
+  // Additional data for the match game
+  extra Json?
 }
 
 //  |----------------------------------------------------------------|
