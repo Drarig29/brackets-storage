@@ -2,9 +2,13 @@ import { DataTypes } from 'brackets-manager/dist/types';
 import {
     MatchResultTransformer,
     MatchStatusTransformer,
+    matchGameExtraFromInput,
 } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { ParticipantResult } from 'brackets-model';
+
+type MatchGameWithExtra = DataTypes['match_game'] & { extra?: Prisma.JsonValue | null };
+type MatchGameExtrasInput = Partial<MatchGameWithExtra> & Record<string, unknown>;
 
 function getParticipantResultUpsertData(value: ParticipantResult): {
     upsert:
@@ -36,15 +40,17 @@ function getParticipantResultUpsertData(value: ParticipantResult): {
 }
 
 function getUpdateData(
-    value: Partial<DataTypes['match_game']> | DataTypes['match_game'],
-): Prisma.XOR<
-    Prisma.MatchGameUpdateInput,
-    Prisma.MatchGameUncheckedUpdateInput
-> {
+    value: Partial<MatchGameWithExtra> | MatchGameWithExtra,
+    previousExtra: Prisma.JsonValue | null,
+): Prisma.XOR<Prisma.MatchGameUpdateInput, Prisma.MatchGameUncheckedUpdateInput> {
+    const extrasInput = value as MatchGameExtrasInput;
+    const extra = matchGameExtraFromInput(extrasInput, previousExtra);
+
     return {
-        stageId: value.stage_id,
-        matchId: value.parent_id,
-        number: value.number,
+        ...(value.stage_id !== undefined ? { stageId: value.stage_id } : {}),
+        ...(value.parent_id !== undefined ? { matchId: value.parent_id } : {}),
+        ...(value.number !== undefined ? { number: value.number } : {}),
+        ...(extra !== undefined ? { extra } : {}),
         status: value.status
             ? MatchStatusTransformer.to(value.status)
             : undefined,
@@ -57,33 +63,49 @@ function getUpdateData(
     };
 }
 
-function updateById(
+async function updateById(
     prisma: PrismaClient,
     id: number,
-    value: Partial<DataTypes['match_game']> | DataTypes['match_game'],
+    value: Partial<MatchGameWithExtra> | MatchGameWithExtra,
+    previousExtra?: Prisma.JsonValue | null,
 ) {
+    let extraSource = previousExtra ?? null;
+
+    if (previousExtra === undefined) {
+        const existing = await prisma.matchGame.findUnique({
+            where: { id },
+            select: { extra: true },
+        });
+
+        extraSource = existing?.extra ?? null;
+    }
+
     return prisma.matchGame.update({
         where: {
             id,
         },
-        data: getUpdateData(value),
+        data: getUpdateData(value, extraSource),
     });
 }
 
 export async function handleMatchGameUpdate(
     prisma: PrismaClient,
-    filter: Partial<DataTypes['match_game']> | number,
-    value: Partial<DataTypes['match_game']> | DataTypes['match_game'],
+    filter: Partial<MatchGameWithExtra> | number,
+    value: Partial<MatchGameWithExtra> | MatchGameWithExtra,
 ): Promise<boolean> {
     if (typeof filter === 'number') {
         // Update by Id
-        return updateById(prisma, filter, value)
-            .then(() => true)
-            .catch(() => false);
+        try {
+            await updateById(prisma, filter, value);
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
-    return prisma.matchGame
-        .findMany({
+    try {
+        const games = await prisma.matchGame.findMany({
             where: {
                 id: filter.id,
                 number: filter.number,
@@ -93,12 +115,16 @@ export async function handleMatchGameUpdate(
                     ? MatchStatusTransformer.to(filter.status)
                     : undefined,
             },
-        })
-        .then((games) => {
-            return Promise.all(
-                games.map((game) => updateById(prisma, game.id, value)),
-            );
-        })
-        .then(() => true)
-        .catch(() => false);
+        });
+
+        await Promise.all(
+            games.map((game) =>
+                updateById(prisma, game.id, value, game.extra ?? null),
+            ),
+        );
+
+        return true;
+    } catch {
+        return false;
+    }
 }

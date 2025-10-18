@@ -244,6 +244,9 @@ model MatchGame {
   // Status of the match.
   status MatchStatus
 
+  // Additional data for the match game.
+  extra Json?
+
   // First opponent of the match.
   opponent1Result ParticipantMatchGameResult? @relation("opponent1")
 
