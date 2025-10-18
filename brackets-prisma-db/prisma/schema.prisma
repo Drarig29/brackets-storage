@@ -233,6 +233,9 @@ model Match {
 
   // The games of the match
   games MatchGame[]
+
+  // Additional data for the match
+  extra Json?
 }
 
 model MatchGame {
