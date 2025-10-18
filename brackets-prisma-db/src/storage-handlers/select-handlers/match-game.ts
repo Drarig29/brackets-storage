@@ -3,14 +3,12 @@ import {
     MatchStatusTransformer,
     MatchGameTransformer,
 } from '../../transformers';
-import { Prisma, PrismaClient } from '@prisma/client';
-
-type MatchGameWithExtra = DataTypes['match_game'] & { extra?: Prisma.JsonValue | null };
+import { PrismaClient } from '@prisma/client';
 
 export async function handleMatchGameSelect(
     prisma: PrismaClient,
-    filter?: Partial<MatchGameWithExtra> | number,
-): Promise<MatchGameWithExtra[] | MatchGameWithExtra | null> {
+    filter?: Partial<DataTypes['match_game']> | number,
+): Promise<DataTypes['match_game'][] | DataTypes['match_game'] | null> {
     if (filter === undefined) {
         // Query all entries of table
         return prisma.matchGame
