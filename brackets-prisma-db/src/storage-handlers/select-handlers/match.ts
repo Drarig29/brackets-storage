@@ -9,7 +9,6 @@ export async function handleMatchSelect(
     filter?: Partial<MatchWithExtra> | number,
 ): Promise<MatchWithExtra[] | MatchWithExtra | null> {
     if (filter === undefined) {
-        // Query all entries of table
         return prisma.match
             .findMany({
                 include: {

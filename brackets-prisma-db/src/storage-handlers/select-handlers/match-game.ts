@@ -14,7 +14,6 @@ export async function handleMatchGameSelect(
     filter?: Partial<MatchGameWithExtra> | number,
 ): Promise<MatchGameWithExtra[] | MatchGameWithExtra | null> {
     if (filter === undefined) {
-        // Query all entries of table
         return prisma.matchGame
             .findMany({
                 include: {
@@ -28,7 +27,6 @@ export async function handleMatchGameSelect(
     }
 
     if (typeof filter === 'number') {
-        // Find by Id
         return prisma.matchGame
             .findFirst({
                 where: { id: filter },

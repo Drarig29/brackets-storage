@@ -15,6 +15,7 @@ function getCreationData(
 > {
     return {
         ...MatchGameTransformer.to(value),
+        extra: value.extra ?? undefined,
         opponent1Result: value.opponent1
             ? {
                   create: {
