@@ -10,10 +10,10 @@ uses [prisma](https://www.prisma.io/) to store the data in an SQL Database.
 
 Currently there are some features of the [manager](https://github.com/Drarig29/brackets-manager.js) that can't be used.
 
-| **Feature**         | **Status**      |
-| ------------------- | --------------- |
-| Custom Participants | Implemented     |
-| Custom Matches      | Implemented     |
+| **Feature**         | **Status**  |
+| ------------------- | ----------- |
+| Custom Participants | Implemented |
+| Custom Matches      | Implemented |
 
 ## Usage
 
@@ -39,4 +39,47 @@ const prisma = new PrismaClient();
 
 const storage = new SqlDatabase(prisma);
 const manager = new BracketsManager(storage);
+```
+
+Example with custom matches and participants:
+
+```typescript
+import { SqlDatabase } from 'brackets-prisma-db'
+import { PrismaClient } from '@prisma/client'
+import { BracketsManager } from 'brackets-manager'
+import type { Match } from 'brackets-model'
+
+type MatchWithWeather = Match & {
+  extra: {
+    weather: 'sunny' | 'rainy' | 'cloudy' | 'snowy'
+  }
+}
+
+const storage = new SqlDatabase(new PrismaClient())
+const manager = new BracketsManager(storage)
+
+const stage = await manager.create.stage({
+  tournamentId: 1,
+  name: 'Example',
+  type: 'single_elimination',
+  seeding: [
+    { name: 'Team 1', color: 'red' },
+    { name: 'Team 2', color: 'blue' },
+    { name: 'Team 3', color: 'green' },
+    { name: 'Team 4', color: 'yellow' },
+  ],
+})
+
+const currentMatches = await manager.get.currentMatches(stage.id)
+
+await manager.update.match<MatchWithWeather>({
+  id: currentMatches[0].id,
+  opponent1: { result: 'win' },
+  extra: {
+    weather: 'sunny',
+  },
+})
+
+const database = await manager.get.tournamentData(1)
+console.log(database)
 ```
