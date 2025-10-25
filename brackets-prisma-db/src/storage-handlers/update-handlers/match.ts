@@ -1,4 +1,3 @@
-import { DataTypes } from 'brackets-manager/dist/types';
 import {
     MatchResultTransformer,
     MatchStatusTransformer,
@@ -6,14 +5,12 @@ import {
 } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { ParticipantResult } from 'brackets-model';
-
-type MatchWithExtra = DataTypes['match'] & { extra?: Prisma.JsonValue | null };
-type MatchExtrasInput = Partial<MatchWithExtra> & Record<string, unknown>;
+import type { MatchExtrasInput, MatchWithExtra } from '../../types';
 
 function getParticipantResultUpsertData(value: ParticipantResult): {
     upsert:
-        | Prisma.ParticipantMatchResultUpsertWithoutOpponent1MatchInput
-        | Prisma.ParticipantMatchResultUpsertWithoutOpponent2MatchInput;
+    | Prisma.ParticipantMatchResultUpsertWithoutOpponent1MatchInput
+    | Prisma.ParticipantMatchResultUpsertWithoutOpponent2MatchInput;
 } {
     return {
         upsert: {
@@ -52,7 +49,6 @@ function getUpdateData(
         roundId: value.round_id,
         childCount: value.child_count,
         number: value.number,
-        ...(extra !== undefined ? { extra } : {}),
         status: value.status
             ? MatchStatusTransformer.to(value.status)
             : undefined,
@@ -62,6 +58,7 @@ function getUpdateData(
         opponent2Result: value.opponent2
             ? getParticipantResultUpsertData(value.opponent2)
             : undefined,
+        extra: extra ?? undefined,
     };
 }
 

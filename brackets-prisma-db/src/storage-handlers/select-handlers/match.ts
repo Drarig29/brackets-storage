@@ -1,8 +1,6 @@
-import { DataTypes } from 'brackets-manager/dist/types';
 import { MatchStatusTransformer, MatchTransformer } from '../../transformers';
-import { Prisma, PrismaClient } from '@prisma/client';
-
-type MatchWithExtra = DataTypes['match'] & { extra?: Prisma.JsonValue | null };
+import { PrismaClient } from '@prisma/client';
+import type { MatchWithExtra } from '../../types';
 
 export async function handleMatchSelect(
     prisma: PrismaClient,

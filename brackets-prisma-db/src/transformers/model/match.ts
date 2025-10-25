@@ -3,13 +3,11 @@ import type {
     ParticipantMatchResult as PrismaParticipantMatchResult,
     Prisma,
 } from '@prisma/client';
-import { Match } from 'brackets-model';
 import { Transformer } from '../transformer';
 import { OmitId } from 'brackets-manager';
 import { MatchStatusTransformer, ParticipantMatchResultTransformer } from '..';
+import type { MatchExtrasInput, MatchWithExtra } from '../../types';
 
-type MatchWithExtra = Match & { extra?: Prisma.JsonValue | null };
-type MatchExtrasInput = Partial<MatchWithExtra> & Record<string, unknown>;
 type PrismaMatchWithRelations = PrismaMatch & {
     opponent1Result: PrismaParticipantMatchResult | null;
     opponent2Result: PrismaParticipantMatchResult | null;
@@ -105,7 +103,7 @@ export const MatchTransformer = {
             roundId: input.round_id,
             number: input.number,
             childCount: input.child_count,
-            ...(extra !== undefined ? { extra } : {}),
+            extra: extra ?? null,
         };
     },
     from(output: PrismaMatchWithRelations) {

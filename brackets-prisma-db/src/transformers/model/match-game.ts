@@ -1,15 +1,10 @@
-import type {
-    MatchGame as PrismaMatchGame,
-    ParticipantMatchGameResult as PrismaParticipantMatchGameResult,
-    Prisma,
-} from '@prisma/client';
-import { MatchGame } from 'brackets-model';
+import { Prisma, MatchGame as PrismaMatchGame, ParticipantMatchGameResult as PrismaParticipantMatchGameResult } from '@prisma/client';
+
 import { Transformer } from '../transformer';
 import { OmitId } from 'brackets-manager';
 import { MatchStatusTransformer, ParticipantMatchResultTransformer } from '..';
+import type { MatchGameExtrasInput, MatchGameWithExtra } from '../../types';
 
-type MatchGameWithExtra = MatchGame & { extra?: Prisma.JsonValue | null };
-type MatchGameExtrasInput = Partial<MatchGameWithExtra> & Record<string, unknown>;
 type PrismaMatchGameWithRelations = PrismaMatchGame & {
     opponent1Result: PrismaParticipantMatchGameResult | null;
     opponent2Result: PrismaParticipantMatchGameResult | null;
