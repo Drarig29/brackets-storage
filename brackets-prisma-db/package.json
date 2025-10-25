@@ -1,6 +1,6 @@
 {
     "name": "brackets-prisma-db",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "A SQL database with Prisma for brackets-manager.js",
     "author": "Tandashi",
     "license": "ISC",
