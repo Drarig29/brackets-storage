@@ -128,6 +128,9 @@ model Participant {
   // Name of the participant
   name String
 
+  // Additional data for the participant
+  extra Json?
+
   // Match results of the participant in the tournament
   matchResults     ParticipantMatchResult[]
   // Match game results of the participant in the tournament
@@ -230,6 +233,9 @@ model Match {
 
   // The games of the match
   games MatchGame[]
+
+  // Additional data for the match
+  extra Json?
 }
 
 model MatchGame {
@@ -237,6 +243,9 @@ model MatchGame {
 
   // Status of the match.
   status MatchStatus
+
+  // Additional data for the match game.
+  extra Json?
 
   // First opponent of the match.
   opponent1Result ParticipantMatchGameResult? @relation("opponent1")

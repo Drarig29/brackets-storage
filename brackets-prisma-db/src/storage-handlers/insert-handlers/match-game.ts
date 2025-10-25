@@ -5,14 +5,17 @@ import {
 } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
 
+type MatchGameWithExtra = DataTypes['match_game'] & { extra?: Prisma.JsonValue | null };
+
 function getCreationData(
-    value: OmitId<DataTypes['match_game']>,
+    value: OmitId<MatchGameWithExtra>,
 ): Prisma.XOR<
     Prisma.MatchGameCreateManyInput,
     Prisma.MatchGameUncheckedCreateInput
 > {
     return {
         ...MatchGameTransformer.to(value),
+        extra: value.extra ?? undefined,
         opponent1Result: value.opponent1
             ? {
                   create: {
@@ -44,7 +47,7 @@ function getCreationData(
 
 export function handleMatchGameInsert(
     prisma: PrismaClient,
-    values: OmitId<DataTypes['match_game']> | OmitId<DataTypes['match_game']>[],
+    values: OmitId<MatchGameWithExtra> | OmitId<MatchGameWithExtra>[],
 ): Promise<number> | Promise<boolean> {
     if (Array.isArray(values)) {
         return prisma.matchGame
