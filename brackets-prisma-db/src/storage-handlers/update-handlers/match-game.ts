@@ -1,4 +1,3 @@
-import { DataTypes } from 'brackets-manager/dist/types';
 import {
     MatchResultTransformer,
     MatchStatusTransformer,
@@ -6,14 +5,12 @@ import {
 } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { ParticipantResult } from 'brackets-model';
-
-type MatchGameWithExtra = DataTypes['match_game'] & { extra?: Prisma.JsonValue | null };
-type MatchGameExtrasInput = Partial<MatchGameWithExtra> & Record<string, unknown>;
+import type { MatchGameWithExtra, MatchGameExtrasInput } from '../../types';
 
 function getParticipantResultUpsertData(value: ParticipantResult): {
     upsert:
-        | Prisma.ParticipantMatchGameResultUpsertWithoutOpponent1MatchGameInput
-        | Prisma.ParticipantMatchGameResultUpsertWithoutOpponent2MatchGameInput;
+    | Prisma.ParticipantMatchGameResultUpsertWithoutOpponent1MatchGameInput
+    | Prisma.ParticipantMatchGameResultUpsertWithoutOpponent2MatchGameInput;
 } {
     return {
         upsert: {
@@ -47,10 +44,9 @@ function getUpdateData(
     const extra = matchGameExtraFromInput(extrasInput, previousExtra);
 
     return {
-        ...(value.stage_id !== undefined ? { stageId: value.stage_id } : {}),
-        ...(value.parent_id !== undefined ? { matchId: value.parent_id } : {}),
-        ...(value.number !== undefined ? { number: value.number } : {}),
-        ...(extra !== undefined ? { extra } : {}),
+        stageId: value.stage_id,
+        matchId: value.parent_id,
+        number: value.number,
         status: value.status
             ? MatchStatusTransformer.to(value.status)
             : undefined,
@@ -60,6 +56,7 @@ function getUpdateData(
         opponent2Result: value.opponent2
             ? getParticipantResultUpsertData(value.opponent2)
             : undefined,
+        extra: extra ?? undefined
     };
 }
 

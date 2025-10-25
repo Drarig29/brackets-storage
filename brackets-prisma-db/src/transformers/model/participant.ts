@@ -1,4 +1,4 @@
-import * as Prisma from '@prisma/client';
+import { Prisma, Participant as PrismaParticipant } from '@prisma/client';
 import { Participant } from 'brackets-model';
 import { Transformer } from '../transformer';
 import { OmitId } from 'brackets-manager';
@@ -18,10 +18,10 @@ function getParticipantExtras(
 
 function getParticipantExtraValue(
     input: Partial<Participant> & Record<string, unknown>,
-): Record<string, unknown> | null {
+): Prisma.JsonValue | null {
     const extra = getParticipantExtras(input);
 
-    return Object.keys(extra).length > 0 ? extra : null;
+    return Object.keys(extra).length > 0 ? extra as Prisma.JsonValue : null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -38,7 +38,7 @@ function normalizeParticipantExtras(extra: unknown): Record<string, unknown> {
 
 export function participantExtraFromInput(
     input: Partial<Participant> & Record<string, unknown>,
-): Record<string, unknown> | null {
+): Prisma.JsonValue | null {
     return getParticipantExtraValue(input);
 }
 
@@ -60,7 +60,7 @@ export const ParticipantTransformer = {
     },
 } satisfies Transformer<
     OmitId<Participant>,
-    OmitId<Prisma.Participant>,
-    Prisma.Participant,
+    OmitId<PrismaParticipant>,
+    PrismaParticipant,
     Participant
 >;

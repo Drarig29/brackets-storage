@@ -19,7 +19,7 @@ export async function handleParticipantUpdate(
                     tournamentId: value.tournament_id,
                     extra: participantExtraFromInput(
                         value as Partial<DataTypes['participant']> & Record<string, unknown>,
-                    ),
+                    ) ?? undefined,
                 },
             })
             .then(() => true)
@@ -39,7 +39,7 @@ export async function handleParticipantUpdate(
                 tournamentId: value.tournament_id,
                 extra: participantExtraFromInput(
                     value as Partial<DataTypes['participant']> & Record<string, unknown>,
-                ),
+                ) ?? undefined,
             },
         })
         .then(() => true)
