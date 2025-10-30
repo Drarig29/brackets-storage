@@ -11,7 +11,7 @@ A Guide on how to include prisma in your project can be found on the official do
 Once [prisma](https://www.prisma.io/) is included in your project copy the [`schema.prisma`](./prisma/schema.prisma) into your project.
 If you have an existing `schema.prisma` in your project copy and paste the schema definitions into your existing one.
 
-> **Warning**
+> [!WARNING]  
 > Do not rename any of the models or enums provided! This **will** break the implementation.
 
 Next generate the prisma client using `npx prisma generate`.
