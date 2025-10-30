@@ -3,18 +3,6 @@
 This implementation of the [`CrudInterface`](https://drarig29.github.io/brackets-docs/reference/manager/interfaces/CrudInterface.html)
 uses [prisma](https://www.prisma.io/) to store the data in an SQL Database.
 
-> **Warning**
-> This implementation has not been full tested yet. Use with caution.
-
-## Limitations
-
-Currently there are some features of the [manager](https://github.com/Drarig29/brackets-manager.js) that can't be used.
-
-| **Feature**         | **Status**  |
-| ------------------- | ----------- |
-| Custom Participants | Implemented |
-| Custom Matches      | Implemented |
-
 ## Usage
 
 To use this implementation make sure you have [prisma](https://www.prisma.io/) included in your project.
