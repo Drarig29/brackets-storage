@@ -1,6 +1,5 @@
 import { DataTypes } from 'brackets-manager/dist/types';
-// @ts-ignore
-import { GroupTransformer } from "../../transformers";
+import { GroupTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 
 export async function handleGroupSelect(

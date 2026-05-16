@@ -3,6 +3,9 @@ import { CrudInterface, OmitId, Table, Database } from 'brackets-model';
 
 const clone = rfdc();
 
+type TableRow = { id: number } & Record<string, any>;
+type Filter = Record<string, any>;
+
 export class InMemoryDatabase implements CrudInterface {
     protected data: Database = {
         participant: [],
@@ -23,8 +26,8 @@ export class InMemoryDatabase implements CrudInterface {
     /**
      * @param partial Filter
      */
-    makeFilter(partial: any): (entry: any) => boolean {
-        return (entry: any): boolean => {
+    makeFilter(partial: Filter): (entry: Filter) => boolean {
+        return (entry: Filter): boolean => {
             let result = true;
             for (const key of Object.keys(partial))
                 result = result && entry[key] === partial[key];
@@ -66,15 +69,14 @@ export class InMemoryDatabase implements CrudInterface {
         table: Table,
         values: OmitId<T> | OmitId<T>[],
     ): Promise<number> | Promise<boolean> {
-        let id = this.data[table].length > 0
-            // @ts-ignore
-            ? (Math.max(...this.data[table].map(d => d.id)) + 1)
+        const rows = this.getTable(table);
+        let id = rows.length > 0
+            ? (Math.max(...rows.map(d => d.id)) + 1)
             : 0;
 
         if (!Array.isArray(values)) {
             try {
-                // @ts-ignore
-                this.data[table].push({ id, ...values });
+                rows.push({ id, ...(values as T) });
             } catch (error) {
                 return new Promise<number>((resolve) => {
                     resolve(-1);
@@ -87,8 +89,7 @@ export class InMemoryDatabase implements CrudInterface {
 
         try {
             values.map((object) => {
-                // @ts-ignore
-                this.data[table].push({ id: id++, ...object });
+                rows.push({ id: id++, ...(object as T) });
             });
         } catch (error) {
             return new Promise<boolean>((resolve) => {
@@ -126,25 +127,23 @@ export class InMemoryDatabase implements CrudInterface {
      * @param table Where to get from.
      * @param arg Arg.
      */
-    select<T>(table: Table, arg?: number | Partial<T>): Promise<T[] | null> {
+    select<T>(table: Table, arg?: number | Partial<T>): Promise<T | T[] | null> {
         try {
             if (arg === undefined) {
                 return new Promise<T[]>((resolve) => {
-                    // @ts-ignore
-                    resolve(this.data[table].map(clone));
+                    resolve(this.getTable(table).map(clone) as T[]);
                 });
             }
 
             if (typeof arg === 'number') {
-                return new Promise<T[]>((resolve) => {
-                    // @ts-ignore
-                    resolve(clone(this.data[table].find(d => d.id === arg)));
+                return new Promise<T | null>((resolve) => {
+                    const found = this.getTable(table).find(d => d.id === arg);
+                    resolve(found ? clone(found) as T : null);
                 });
             }
 
             return new Promise<T[] | null>((resolve) => {
-                // @ts-ignore
-                resolve(this.data[table].filter(this.makeFilter(arg)).map(clone));
+                resolve(this.getTable(table).filter(this.makeFilter(arg as Filter)).map(clone) as T[]);
             });
         } catch (error) {
             return new Promise<null>((resolve) => {
@@ -202,25 +201,22 @@ export class InMemoryDatabase implements CrudInterface {
             }
         }
 
-        // @ts-ignore
-        const values = this.data[table].filter(this.makeFilter(arg));
+        const values = this.getTable(table).filter(this.makeFilter(arg as Filter));
         if (!values) {
             return new Promise<boolean>((resolve) => {
                 resolve(false);
             });
         }
 
-        values.forEach((v: { id: any }) => {
+        values.forEach((v) => {
             const index = this.getEntityIndexById(table, v.id);
-            const existing = this.data[table][index];
-            for (const key in value) {
-                // @ts-ignore
-                if (existing[key] && typeof existing[key] === 'object' && typeof value[key] === 'object') {
-                    // @ts-ignore
-                    Object.assign(existing[key], value[key]); // For opponent objects, this does a deep merge of level 2.
+            const existing = this.getTable(table)[index];
+            const updateValue = value as Filter;
+            for (const key in updateValue) {
+                if (this.isObject(existing[key]) && this.isObject(updateValue[key])) {
+                    Object.assign(existing[key], updateValue[key]); // For opponent objects, this does a deep merge of level 2.
                 } else {
-                    // @ts-ignore
-                    existing[key] = value[key]; // Otherwise, do a simple value assignment.
+                    existing[key] = updateValue[key]; // Otherwise, do a simple value assignment.
                 }
             }
             this.setEntityByIndex(table, index, existing);
@@ -270,8 +266,7 @@ export class InMemoryDatabase implements CrudInterface {
         const predicate = this.makeFilter(filter);
         const negativeFilter = (value: any): boolean => !predicate(value);
 
-        // @ts-ignore
-        this.data[table] = values.filter(negativeFilter);
+        this.setTable(table, this.getTable(table).filter(negativeFilter));
 
         return new Promise<boolean>((resolve) => {
             resolve(true);
@@ -286,13 +281,13 @@ export class InMemoryDatabase implements CrudInterface {
      * @returns 
      */
     getEntityIndexById(table: Table, id: number) {
-        const index = this.data[table].findIndex(e => e.id === id);
-        if(index === -1){
+        const index = this.getTable(table).findIndex(e => e.id === id);
+        if (index === -1) {
             throw new Error(`Entity in ${table} with id ${id} not found.`)
         }
         return index
     }
-    
+
     /**
      * Set a table entity value by its index 
      * 
@@ -301,7 +296,18 @@ export class InMemoryDatabase implements CrudInterface {
      * @param value 
      */
     setEntityByIndex<T>(table: Table, index: number, value: T) {
-        // @ts-ignore
-        this.data[table][index] = value;
+        this.getTable(table)[index] = value as TableRow;
+    }
+
+    private getTable(table: Table): TableRow[] {
+        return this.data[table] as unknown as TableRow[];
+    }
+
+    private setTable(table: Table, values: TableRow[]): void {
+        (this.data as unknown as Record<Table, TableRow[]>)[table] = values;
+    }
+
+    private isObject(value: unknown): value is Record<string, unknown> {
+        return typeof value === 'object' && value !== null;
     }
 }
