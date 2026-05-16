@@ -15,7 +15,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 24
-      - run: npm install
+      - name: Install dependencies
+        run: |
+            (cd brackets-json-db && npm install) &
+            (cd brackets-memory-db && npm install) &
+            (cd brackets-prisma-db && npm install) &
+            wait
       - run: npm test
         env:
           FORCE_COLOR: "1"
