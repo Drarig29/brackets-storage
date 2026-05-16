@@ -1,0 +1,102 @@
+name: Publish packages on NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish
+        type: choice
+        default: all
+        options:
+          - all
+          - brackets-json-db
+          - brackets-memory-db
+          - brackets-prisma-db
+      dry_run:
+        description: Run npm publish --dry-run instead of publishing
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.select.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+      - id: select
+        name: Select packages
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          selected="${{ inputs.package }}"
+          packages=(
+            brackets-json-db
+            brackets-memory-db
+            brackets-prisma-db
+          )
+          selected_packages="[]"
+
+          for directory in "${packages[@]}"; do
+            name="$(node -p "require('./${directory}/package.json').name")"
+            version="$(node -p "require('./${directory}/package.json').version")"
+
+            if [[ "$selected" != "all" && "$selected" != "$name" ]]; then
+              echo "Skipping ${name}@${version}: not selected"
+              continue
+            fi
+
+            echo "Selected ${name}@${version}"
+            selected_packages="$(
+              node -e "
+                const packages = JSON.parse(process.argv[1]);
+                packages.push({
+                  directory: process.argv[2],
+                  name: process.argv[3],
+                  version: process.argv[4],
+                });
+                process.stdout.write(JSON.stringify(packages));
+              " "$selected_packages" "$directory" "$name" "$version"
+            )"
+          done
+
+          echo "Selected package matrix: ${selected_packages}"
+          echo "matrix={\"include\":${selected_packages}}" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: select
+    runs-on: ubuntu-latest
+    environment: npm
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+      - name: Install dependencies
+        run: npm install
+      - name: Install and build package
+        run: npm install
+        working-directory: ${{ matrix.directory }}
+      - name: Publish ${{ matrix.name }}@${{ matrix.version }}
+        run: |
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            npm publish --dry-run
+          else
+            npm publish
+          fi
+        working-directory: ${{ matrix.directory }}
