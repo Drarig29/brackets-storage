@@ -1,14 +1,14 @@
-import { DataTypes, OmitId } from 'brackets-manager/dist/types';
+import { DataTypes, OmitId } from 'brackets-model';
 import { StageTransformer, StageSettingsTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 
-export function handleStageInsert(
+export async function handleStageInsert(
     prisma: PrismaClient,
     values: OmitId<DataTypes['stage']> | OmitId<DataTypes['stage']>[],
-): Promise<number> | Promise<boolean> {
-    if (Array.isArray(values)) {
-        return prisma.stage
-            .createMany({
+): Promise<number | boolean> {
+    try {
+        if (Array.isArray(values)) {
+            await prisma.stage.createMany({
                 data: values.map((v) => ({
                     ...StageTransformer.to(v),
                     settings: {
@@ -17,13 +17,12 @@ export function handleStageInsert(
                         },
                     },
                 })),
-            })
-            .then(() => true)
-            .catch(() => false);
-    }
+            });
 
-    return prisma.stage
-        .create({
+            return true;
+        }
+
+        const stage = await prisma.stage.create({
             data: {
                 ...StageTransformer.to(values),
                 settings: {
@@ -32,7 +31,10 @@ export function handleStageInsert(
                     },
                 },
             },
-        })
-        .then((v) => v.id)
-        .catch(() => -1);
+        });
+
+        return stage.id;
+    } catch {
+        return Array.isArray(values) ? false : -1;
+    }
 }

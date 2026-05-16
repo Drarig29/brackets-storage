@@ -1,7 +1,8 @@
 import { Prisma, Participant as PrismaParticipant } from '@prisma/client';
 import { Participant } from 'brackets-model';
 import { Transformer } from '../transformer';
-import { OmitId } from 'brackets-manager';
+import { OmitId } from 'brackets-model';
+import { toPrismaId } from '../../prisma-id';
 
 function getParticipantExtras(
     input: Partial<Participant> & Record<string, unknown>,
@@ -46,7 +47,7 @@ export const ParticipantTransformer = {
     to(input) {
         return {
             name: input.name,
-            tournamentId: input.tournament_id,
+            tournamentId: toPrismaId(input.tournament_id),
             extra: getParticipantExtraValue(input),
         };
     },

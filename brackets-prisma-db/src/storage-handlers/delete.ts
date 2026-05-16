@@ -1,4 +1,4 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes } from 'brackets-model';
 import {
     handleGroupDelete,
     handleMatchDelete,

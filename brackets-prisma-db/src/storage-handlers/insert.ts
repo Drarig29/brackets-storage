@@ -1,4 +1,4 @@
-import { DataTypes, OmitId } from 'brackets-manager/dist/types';
+import { DataTypes, OmitId } from 'brackets-model';
 import {
     handleGroupInsert,
     handleParticipantInsert,

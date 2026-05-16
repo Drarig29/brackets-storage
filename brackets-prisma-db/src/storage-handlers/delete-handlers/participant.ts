@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes } from 'brackets-model';
+import { InvalidPrismaIdError, toPrismaId } from '../../prisma-id';
 
 export async function handleParticipantDelete(
     prisma: PrismaClient,
@@ -7,20 +8,31 @@ export async function handleParticipantDelete(
 ): Promise<boolean> {
     // No filter so delete everything
     if (!filter) {
-        return prisma.participant
-            .deleteMany({})
-            .then(() => true)
-            .catch(() => false);
+        try {
+            await prisma.participant.deleteMany({});
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
-    return prisma.participant
-        .deleteMany({
-            where: {
-                id: filter.id,
-                name: filter.name,
-                tournamentId: filter.tournament_id,
-            },
-        })
-        .then(() => true)
-        .catch(() => false);
+    try {
+        const where = {
+            id: toPrismaId(filter.id),
+            name: filter.name,
+            tournamentId: toPrismaId(filter.tournament_id),
+        };
+
+        await prisma.participant.deleteMany({ where });
+
+        return true;
+    } catch (error) {
+        // An unsupported storage ID should behave like a filter that matched no rows.
+        if (error instanceof InvalidPrismaIdError) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -1,43 +1,50 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import { PrismaClient } from '@prisma/client';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleRoundUpdate(
     prisma: PrismaClient,
-    filter: Partial<DataTypes['round']> | number,
+    filter: Partial<DataTypes['round']> | Id,
     value: Partial<DataTypes['round']> | DataTypes['round'],
 ): Promise<boolean> {
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Update by Id
-        return prisma.round
-            .update({
+        try {
+            await prisma.round.update({
                 where: {
-                    id: filter,
+                    id: toPrismaId(filter),
                 },
                 data: {
                     number: value.number,
-                    stageId: value.stage_id,
-                    groupId: value.group_id,
+                    stageId: toPrismaId(value.stage_id),
+                    groupId: toPrismaId(value.group_id),
                 },
-            })
-            .then(() => true)
-            .catch(() => false);
+            });
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     // Update by filter
-    return prisma.round
-        .updateMany({
+    try {
+        await prisma.round.updateMany({
             where: {
-                id: filter.id,
+                id: toPrismaId(filter.id),
                 number: filter.number,
-                stageId: filter.stage_id,
-                groupId: filter.group_id,
+                stageId: toPrismaId(filter.stage_id),
+                groupId: toPrismaId(filter.group_id),
             },
             data: {
                 number: value.number,
-                stageId: value.stage_id,
-                groupId: value.group_id,
+                stageId: toPrismaId(value.stage_id),
+                groupId: toPrismaId(value.group_id),
             },
-        })
-        .then(() => true)
-        .catch(() => false);
+        });
+
+        return true;
+    } catch {
+        return false;
+    }
 }

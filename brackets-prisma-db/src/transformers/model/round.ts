@@ -1,13 +1,14 @@
 import * as Prisma from '@prisma/client';
 import { Round } from 'brackets-model';
 import { Transformer } from '../transformer';
-import { OmitId } from 'brackets-manager';
+import { OmitId } from 'brackets-model';
+import { toPrismaId } from '../../prisma-id';
 
 export const RoundTransformer = {
     to(input) {
         return {
-            stageId: input.stage_id,
-            groupId: input.group_id,
+            stageId: toPrismaId(input.stage_id),
+            groupId: toPrismaId(input.group_id),
             number: input.number,
         };
     },

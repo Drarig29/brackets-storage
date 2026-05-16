@@ -1,43 +1,51 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import { ParticipantTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleParticipantSelect(
     prisma: PrismaClient,
-    filter?: Partial<DataTypes['participant']> | number,
+    filter?: Partial<DataTypes['participant']> | Id,
 ): Promise<DataTypes['participant'][] | DataTypes['participant'] | null> {
     if (filter === undefined) {
         // Query all entries of table
-        return prisma.participant
-            .findMany()
-            .then((values) => values.map(ParticipantTransformer.from))
-            .catch(() => []);
+        try {
+            const values = await prisma.participant.findMany();
+
+            return values.map(ParticipantTransformer.from);
+        } catch {
+            return [];
+        }
     }
 
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Find by Id
-        return prisma.participant
-            .findFirst({
-                where: { id: filter },
-            })
-            .then((value) => {
-                if (value === null) {
-                    return null;
-                }
+        try {
+            const value = await prisma.participant.findFirst({
+                where: { id: toPrismaId(filter) },
+            });
 
-                return ParticipantTransformer.from(value);
-            })
-            .catch(() => null);
+            if (value === null) {
+                return null;
+            }
+
+            return ParticipantTransformer.from(value);
+        } catch {
+            return null;
+        }
     }
 
-    return prisma.participant
-        .findMany({
+    try {
+        const values = await prisma.participant.findMany({
             where: {
-                id: filter.id,
+                id: toPrismaId(filter.id),
                 name: filter.name,
-                tournamentId: filter.tournament_id,
+                tournamentId: toPrismaId(filter.tournament_id),
             },
-        })
-        .then((values) => values.map(ParticipantTransformer.from))
-        .catch(() => []);
+        });
+
+        return values.map(ParticipantTransformer.from);
+    } catch {
+        return [];
+    }
 }

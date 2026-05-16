@@ -1,7 +1,7 @@
 import * as Prisma from '@prisma/client';
 import { StageSettings } from 'brackets-model';
 import { Transformer } from '../transformer';
-import { OmitId } from 'brackets-manager';
+import { OmitId } from 'brackets-model';
 import {
     GrandFinalTypeTransformer,
     RoundRobinModeTransformer,

@@ -4,49 +4,55 @@ import {
 } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 import type { MatchGameWithExtra } from '../../types';
+import type { Id } from 'brackets-model';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleMatchGameSelect(
     prisma: PrismaClient,
-    filter?: Partial<MatchGameWithExtra> | number,
+    filter?: Partial<MatchGameWithExtra> | Id,
 ): Promise<MatchGameWithExtra[] | MatchGameWithExtra | null> {
     if (filter === undefined) {
-        return prisma.matchGame
-            .findMany({
+        try {
+            const values = await prisma.matchGame.findMany({
                 include: {
                     opponent1Result: true,
                     opponent2Result: true,
                 },
                 orderBy: [{ number: 'asc' }],
-            })
-            .then((values) => values.map(MatchGameTransformer.from))
-            .catch(() => []);
+            });
+
+            return values.map(MatchGameTransformer.from);
+        } catch {
+            return [];
+        }
     }
 
-    if (typeof filter === 'number') {
-        return prisma.matchGame
-            .findFirst({
-                where: { id: filter },
+    if (isModelId(filter)) {
+        try {
+            const value = await prisma.matchGame.findFirst({
+                where: { id: toPrismaId(filter) },
                 include: {
                     opponent1Result: true,
                     opponent2Result: true,
                 },
-            })
-            .then((value) => {
-                if (value === null) {
-                    return null;
-                }
+            });
 
-                return MatchGameTransformer.from(value);
-            })
-            .catch(() => null);
+            if (value === null) {
+                return null;
+            }
+
+            return MatchGameTransformer.from(value);
+        } catch {
+            return null;
+        }
     }
 
-    return prisma.matchGame
-        .findMany({
+    try {
+        const values = await prisma.matchGame.findMany({
             where: {
-                id: filter.id,
-                stageId: filter.stage_id,
-                matchId: filter.parent_id,
+                id: toPrismaId(filter.id),
+                stageId: toPrismaId(filter.stage_id),
+                matchId: toPrismaId(filter.parent_id),
                 number: filter.number,
                 status: filter.status
                     ? MatchStatusTransformer.to(filter.status)
@@ -57,7 +63,10 @@ export async function handleMatchGameSelect(
                 opponent2Result: true,
             },
             orderBy: [{ number: 'asc' }],
-        })
-        .then((values) => values.map(MatchGameTransformer.from))
-        .catch(() => []);
+        });
+
+        return values.map(MatchGameTransformer.from);
+    } catch {
+        return [];
+    }
 }

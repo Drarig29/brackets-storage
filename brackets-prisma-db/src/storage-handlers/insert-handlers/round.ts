@@ -1,24 +1,26 @@
-import { DataTypes, OmitId } from 'brackets-manager/dist/types';
+import { DataTypes, OmitId } from 'brackets-model';
 import { RoundTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 
-export function handleRoundInsert(
+export async function handleRoundInsert(
     prisma: PrismaClient,
     values: OmitId<DataTypes['round']> | OmitId<DataTypes['round']>[],
-): Promise<number> | Promise<boolean> {
-    if (Array.isArray(values)) {
-        return prisma.round
-            .createMany({
+): Promise<number | boolean> {
+    try {
+        if (Array.isArray(values)) {
+            await prisma.round.createMany({
                 data: values.map(RoundTransformer.to),
-            })
-            .then(() => true)
-            .catch(() => false);
-    }
+            });
 
-    return prisma.round
-        .create({
+            return true;
+        }
+
+        const round = await prisma.round.create({
             data: RoundTransformer.to(values),
-        })
-        .then((v) => v.id)
-        .catch(() => -1);
+        });
+
+        return round.id;
+    } catch {
+        return Array.isArray(values) ? false : -1;
+    }
 }

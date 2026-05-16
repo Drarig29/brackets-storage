@@ -1,14 +1,16 @@
 import { MatchStatusTransformer, MatchTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 import type { MatchWithExtra } from '../../types';
+import type { Id } from 'brackets-model';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleMatchSelect(
     prisma: PrismaClient,
-    filter?: Partial<MatchWithExtra> | number,
+    filter?: Partial<MatchWithExtra> | Id,
 ): Promise<MatchWithExtra[] | MatchWithExtra | null> {
     if (filter === undefined) {
-        return prisma.match
-            .findMany({
+        try {
+            const values = await prisma.match.findMany({
                 include: {
                     opponent1Result: true,
                     opponent2Result: true,
@@ -21,38 +23,42 @@ export async function handleMatchSelect(
                     },
                     { number: 'asc' },
                 ],
-            })
-            .then((values) => values.map(MatchTransformer.from))
-            .catch(() => []);
+            });
+
+            return values.map(MatchTransformer.from);
+        } catch {
+            return [];
+        }
     }
 
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Find by Id
-        return prisma.match
-            .findFirst({
-                where: { id: filter },
+        try {
+            const value = await prisma.match.findFirst({
+                where: { id: toPrismaId(filter) },
                 include: {
                     opponent1Result: true,
                     opponent2Result: true,
                 },
-            })
-            .then((value) => {
-                if (value === null) {
-                    return null;
-                }
+            });
 
-                return MatchTransformer.from(value);
-            })
-            .catch(() => null);
+            if (value === null) {
+                return null;
+            }
+
+            return MatchTransformer.from(value);
+        } catch {
+            return null;
+        }
     }
 
-    return prisma.match
-        .findMany({
+    try {
+        const values = await prisma.match.findMany({
             where: {
-                id: filter.id,
-                stageId: filter.stage_id,
-                groupId: filter.group_id,
-                roundId: filter.round_id,
+                id: toPrismaId(filter.id),
+                stageId: toPrismaId(filter.stage_id),
+                groupId: toPrismaId(filter.group_id),
+                roundId: toPrismaId(filter.round_id),
                 number: filter.number,
                 status: filter.status
                     ? MatchStatusTransformer.to(filter.status)
@@ -71,7 +77,10 @@ export async function handleMatchSelect(
                 },
                 { number: 'asc' },
             ],
-        })
-        .then((values) => values.map(MatchTransformer.from))
-        .catch(() => []);
+        });
+
+        return values.map(MatchTransformer.from);
+    } catch {
+        return [];
+    }
 }

@@ -1,10 +1,11 @@
-import { OmitId } from 'brackets-manager/dist/types';
+import { OmitId } from 'brackets-model';
 import {
     MatchGameTransformer,
     MatchResultTransformer,
 } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
 import type { MatchGameWithExtra } from '../../types';
+import { toPrismaId } from '../../prisma-id';
 
 function getCreationData(
     value: OmitId<MatchGameWithExtra>,
@@ -18,7 +19,7 @@ function getCreationData(
         opponent1Result: value.opponent1
             ? {
                 create: {
-                    participantId: value.opponent1.id,
+                    participantId: toPrismaId(value.opponent1.id),
                     forfeit: value.opponent1.forfeit,
                     position: value.opponent1.position,
                     score: value.opponent1.score,
@@ -31,7 +32,7 @@ function getCreationData(
         opponent2Result: value.opponent2
             ? {
                 create: {
-                    participantId: value.opponent2.id,
+                    participantId: toPrismaId(value.opponent2.id),
                     forfeit: value.opponent2.forfeit,
                     position: value.opponent2.position,
                     score: value.opponent2.score,
@@ -44,23 +45,25 @@ function getCreationData(
     };
 }
 
-export function handleMatchGameInsert(
+export async function handleMatchGameInsert(
     prisma: PrismaClient,
     values: OmitId<MatchGameWithExtra> | OmitId<MatchGameWithExtra>[],
-): Promise<number> | Promise<boolean> {
-    if (Array.isArray(values)) {
-        return prisma.matchGame
-            .createMany({
+): Promise<number | boolean> {
+    try {
+        if (Array.isArray(values)) {
+            await prisma.matchGame.createMany({
                 data: values.map((v) => getCreationData(v)),
-            })
-            .then(() => true)
-            .catch(() => false);
-    }
+            });
 
-    return prisma.matchGame
-        .create({
+            return true;
+        }
+
+        const matchGame = await prisma.matchGame.create({
             data: getCreationData(values),
-        })
-        .then((v) => v.id)
-        .catch(() => -1);
+        });
+
+        return matchGame.id;
+    } catch {
+        return Array.isArray(values) ? false : -1;
+    }
 }

@@ -1,47 +1,55 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import { RoundTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleRoundSelect(
     prisma: PrismaClient,
-    filter?: Partial<DataTypes['round']> | number,
+    filter?: Partial<DataTypes['round']> | Id,
 ): Promise<DataTypes['round'][] | DataTypes['round'] | null> {
     if (filter === undefined) {
         // Query all entries of table
-        return prisma.round
-            .findMany({
+        try {
+            const values = await prisma.round.findMany({
                 orderBy: [{ number: 'asc' }],
-            })
-            .then((values) => values.map(RoundTransformer.from))
-            .catch(() => []);
+            });
+
+            return values.map(RoundTransformer.from);
+        } catch {
+            return [];
+        }
     }
 
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Find by Id
-        return prisma.round
-            .findFirst({
-                where: { id: filter },
-            })
-            .then((value) => {
-                if (value === null) {
-                    return null;
-                }
+        try {
+            const value = await prisma.round.findFirst({
+                where: { id: toPrismaId(filter) },
+            });
 
-                return RoundTransformer.from(value);
-            })
-            .catch(() => null);
+            if (value === null) {
+                return null;
+            }
+
+            return RoundTransformer.from(value);
+        } catch {
+            return null;
+        }
     }
 
-    return prisma.round
-        .findMany({
+    try {
+        const values = await prisma.round.findMany({
             where: {
-                id: filter.id,
-                stageId: filter.stage_id,
-                groupId: filter.group_id,
+                id: toPrismaId(filter.id),
+                stageId: toPrismaId(filter.stage_id),
+                groupId: toPrismaId(filter.group_id),
                 number: filter.number,
             },
             orderBy: [{ number: 'asc' }],
-        })
-        .then((values) => values.map(RoundTransformer.from))
-        .catch(() => []);
+        });
+
+        return values.map(RoundTransformer.from);
+    } catch {
+        return [];
+    }
 }

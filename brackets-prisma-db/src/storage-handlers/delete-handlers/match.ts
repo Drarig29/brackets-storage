@@ -1,6 +1,7 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes } from 'brackets-model';
 import { MatchStatusTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
+import { InvalidPrismaIdError, toPrismaId } from '../../prisma-id';
 
 export async function handleMatchDelete(
     prisma: PrismaClient,
@@ -8,25 +9,36 @@ export async function handleMatchDelete(
 ): Promise<boolean> {
     // No filter so delete everything
     if (!filter) {
-        return prisma.match
-            .deleteMany({})
-            .then(() => true)
-            .catch(() => false);
+        try {
+            await prisma.match.deleteMany({});
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
-    return prisma.match
-        .deleteMany({
-            where: {
-                id: filter.id,
-                stageId: filter.stage_id,
-                groupId: filter.group_id,
-                roundId: filter.round_id,
-                number: filter.number,
-                status: filter.status
-                    ? MatchStatusTransformer.to(filter.status)
-                    : undefined,
-            },
-        })
-        .then(() => true)
-        .catch(() => false);
+    try {
+        const where = {
+            id: toPrismaId(filter.id),
+            stageId: toPrismaId(filter.stage_id),
+            groupId: toPrismaId(filter.group_id),
+            roundId: toPrismaId(filter.round_id),
+            number: filter.number,
+            status: filter.status
+                ? MatchStatusTransformer.to(filter.status)
+                : undefined,
+        };
+
+        await prisma.match.deleteMany({ where });
+
+        return true;
+    } catch (error) {
+        // An unsupported storage ID should behave like a filter that matched no rows.
+        if (error instanceof InvalidPrismaIdError) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -1,5 +1,4 @@
-import { CrudInterface, OmitId } from 'brackets-manager';
-import { DataTypes } from 'brackets-manager/dist/types';
+import { CrudInterface, DataTypes, Id, OmitId } from 'brackets-model';
 import {
     handleInsert,
     handleDelete,
@@ -33,7 +32,7 @@ export class SqlDatabase implements CrudInterface {
     select<T extends keyof DataTypes>(table: T): Promise<DataTypes[T][] | null>;
     select<T extends keyof DataTypes>(
         table: T,
-        id: number,
+        id: Id,
     ): Promise<DataTypes[T] | null>;
     select<T extends keyof DataTypes>(
         table: T,
@@ -41,7 +40,7 @@ export class SqlDatabase implements CrudInterface {
     ): Promise<DataTypes[T][] | null>;
     select<T extends keyof DataTypes>(
         table: T,
-        filter?: Partial<DataTypes[T]> | number,
+        filter?: Partial<DataTypes[T]> | Id,
     ): Promise<DataTypes[T][] | DataTypes[T] | null> {
         return handleSelect(this.prisma, table, filter) as unknown as Promise<
             DataTypes[T][] | DataTypes[T] | null
@@ -50,7 +49,7 @@ export class SqlDatabase implements CrudInterface {
 
     update<T extends keyof DataTypes>(
         table: T,
-        id: number,
+        id: Id,
         value: DataTypes[T],
     ): Promise<boolean>;
     update<T extends keyof DataTypes>(
@@ -60,7 +59,7 @@ export class SqlDatabase implements CrudInterface {
     ): Promise<boolean>;
     update<T extends keyof DataTypes>(
         table: T,
-        filter: Partial<DataTypes[T]> | number,
+        filter: Partial<DataTypes[T]> | Id,
         value: Partial<DataTypes[T]> | DataTypes[T],
     ): Promise<boolean> {
         return handleUpdate(this.prisma, table, filter, value);

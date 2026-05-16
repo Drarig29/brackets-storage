@@ -1,24 +1,26 @@
-import { DataTypes, OmitId } from 'brackets-manager/dist/types';
+import { DataTypes, OmitId } from 'brackets-model';
 import { GroupTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
 
-export function handleGroupInsert(
+export async function handleGroupInsert(
     prisma: PrismaClient,
     values: OmitId<DataTypes['group']> | OmitId<DataTypes['group']>[],
-): Promise<number> | Promise<boolean> {
-    if (Array.isArray(values)) {
-        return prisma.group
-            .createMany({
+): Promise<number | boolean> {
+    try {
+        if (Array.isArray(values)) {
+            await prisma.group.createMany({
                 data: values.map(GroupTransformer.to),
-            })
-            .then(() => true)
-            .catch(() => false);
-    }
+            });
 
-    return prisma.group
-        .create({
+            return true;
+        }
+
+        const group = await prisma.group.create({
             data: GroupTransformer.to(values),
-        })
-        .then((v) => v.id)
-        .catch(() => -1);
+        });
+
+        return group.id;
+    } catch {
+        return Array.isArray(values) ? false : -1;
+    }
 }

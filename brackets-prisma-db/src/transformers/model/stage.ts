@@ -1,14 +1,15 @@
 import * as Prisma from '@prisma/client';
 import { Stage } from 'brackets-model';
 import { Transformer } from '../transformer';
-import { OmitId } from 'brackets-manager';
+import { OmitId } from 'brackets-model';
 import { StageSettingsTransformer, StageTypeTransformer } from '..';
+import { toPrismaId } from '../../prisma-id';
 
 export const StageTransformer = {
     to(input) {
         return {
             name: input.name,
-            tournamentId: input.tournament_id,
+            tournamentId: toPrismaId(input.tournament_id),
             number: input.number,
             type: StageTypeTransformer.to(input.type),
         };

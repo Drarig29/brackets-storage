@@ -1,4 +1,4 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import {
     handleGroupSelect,
     handleMatchGameSelect,
@@ -12,7 +12,7 @@ import { PrismaClient } from '@prisma/client';
 export async function handleSelect<T extends keyof DataTypes>(
     prisma: PrismaClient,
     table: T,
-    filter?: Partial<DataTypes[T]> | number,
+    filter?: Partial<DataTypes[T]> | Id,
 ): Promise<DataTypes[T][] | DataTypes[T] | null> {
     switch (table) {
         case 'participant':

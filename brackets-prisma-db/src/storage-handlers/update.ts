@@ -1,4 +1,4 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import {
     handleGroupUpdate,
     handleMatchGameUpdate,
@@ -12,7 +12,7 @@ import { PrismaClient } from '@prisma/client';
 export async function handleUpdate<T extends keyof DataTypes>(
     prisma: PrismaClient,
     table: T,
-    filter: Partial<DataTypes[T]> | number,
+    filter: Partial<DataTypes[T]> | Id,
     value: Partial<DataTypes[T]> | DataTypes[T],
 ): Promise<boolean> {
     switch (table) {

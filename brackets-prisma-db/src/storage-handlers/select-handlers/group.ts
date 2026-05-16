@@ -1,47 +1,54 @@
-import { DataTypes } from 'brackets-manager/dist/types';
-// @ts-ignore
-import { GroupTransformer } from "../../transformers";
+import { DataTypes, Id } from 'brackets-model';
+import { GroupTransformer } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleGroupSelect(
     prisma: PrismaClient,
-    filter?: Partial<DataTypes['group']> | number,
+    filter?: Partial<DataTypes['group']> | Id,
 ): Promise<DataTypes['group'][] | DataTypes['group'] | null> {
     if (filter === undefined) {
         // Query all entries of table
-        return prisma.group
-            .findMany({
+        try {
+            const values = await prisma.group.findMany({
                 orderBy: [{ number: 'asc' }],
-            })
-            .then((values) => values.map(GroupTransformer.from))
-            .catch(() => []);
+            });
+
+            return values.map(GroupTransformer.from);
+        } catch {
+            return [];
+        }
     }
 
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Find by Id
-        return prisma.group
-            .findFirst({
-                where: { id: filter },
-            })
-            .then((value) => {
-                if (value === null) {
-                    return null;
-                }
+        try {
+            const value = await prisma.group.findFirst({
+                where: { id: toPrismaId(filter) },
+            });
 
-                return GroupTransformer.from(value);
-            })
-            .catch(() => null);
+            if (value === null) {
+                return null;
+            }
+
+            return GroupTransformer.from(value);
+        } catch {
+            return null;
+        }
     }
 
-    return prisma.group
-        .findMany({
+    try {
+        const values = await prisma.group.findMany({
             where: {
-                id: filter.id,
-                stageId: filter.stage_id,
+                id: toPrismaId(filter.id),
+                stageId: toPrismaId(filter.stage_id),
                 number: filter.number,
             },
             orderBy: [{ number: 'asc' }],
-        })
-        .then((values) => values.map(GroupTransformer.from))
-        .catch(() => []);
+        });
+
+        return values.map(GroupTransformer.from);
+    } catch {
+        return [];
+    }
 }

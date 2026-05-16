@@ -4,8 +4,9 @@ import {
     matchGameExtraFromInput,
 } from '../../transformers';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { ParticipantResult } from 'brackets-model';
+import { Id, ParticipantResult } from 'brackets-model';
 import type { MatchGameWithExtra, MatchGameExtrasInput } from '../../types';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 function getParticipantResultUpsertData(value: ParticipantResult): {
     upsert:
@@ -15,7 +16,7 @@ function getParticipantResultUpsertData(value: ParticipantResult): {
     return {
         upsert: {
             update: {
-                participantId: value.id,
+                participantId: toPrismaId(value.id),
                 forfeit: value.forfeit,
                 position: value.position,
                 score: value.score,
@@ -24,7 +25,7 @@ function getParticipantResultUpsertData(value: ParticipantResult): {
                     : undefined,
             },
             create: {
-                participantId: value.id,
+                participantId: toPrismaId(value.id),
                 forfeit: value.forfeit,
                 position: value.position,
                 score: value.score,
@@ -44,8 +45,8 @@ function getUpdateData(
     const extra = matchGameExtraFromInput(extrasInput, previousExtra);
 
     return {
-        stageId: value.stage_id,
-        matchId: value.parent_id,
+        stageId: toPrismaId(value.stage_id),
+        matchId: toPrismaId(value.parent_id),
         number: value.number,
         status: value.status
             ? MatchStatusTransformer.to(value.status)
@@ -62,7 +63,7 @@ function getUpdateData(
 
 async function updateById(
     prisma: PrismaClient,
-    id: number,
+    id: Id,
     value: Partial<MatchGameWithExtra> | MatchGameWithExtra,
     previousExtra?: Prisma.JsonValue | null,
 ) {
@@ -70,7 +71,7 @@ async function updateById(
 
     if (previousExtra === undefined) {
         const existing = await prisma.matchGame.findUnique({
-            where: { id },
+            where: { id: toPrismaId(id) },
             select: { extra: true },
         });
 
@@ -79,7 +80,7 @@ async function updateById(
 
     return prisma.matchGame.update({
         where: {
-            id,
+            id: toPrismaId(id),
         },
         data: getUpdateData(value, extraSource),
     });
@@ -87,10 +88,10 @@ async function updateById(
 
 export async function handleMatchGameUpdate(
     prisma: PrismaClient,
-    filter: Partial<MatchGameWithExtra> | number,
+    filter: Partial<MatchGameWithExtra> | Id,
     value: Partial<MatchGameWithExtra> | MatchGameWithExtra,
 ): Promise<boolean> {
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Update by Id
         try {
             await updateById(prisma, filter, value);
@@ -104,10 +105,10 @@ export async function handleMatchGameUpdate(
     try {
         const games = await prisma.matchGame.findMany({
             where: {
-                id: filter.id,
+                id: toPrismaId(filter.id),
                 number: filter.number,
-                stageId: filter.stage_id,
-                matchId: filter.parent_id,
+                stageId: toPrismaId(filter.stage_id),
+                matchId: toPrismaId(filter.parent_id),
                 status: filter.status
                     ? MatchStatusTransformer.to(filter.status)
                     : undefined,

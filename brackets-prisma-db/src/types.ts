@@ -1,4 +1,4 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes } from 'brackets-model';
 import { Prisma } from '@prisma/client';
 
 export type MatchWithExtra = DataTypes['match'] & { extra?: Prisma.JsonValue | null };

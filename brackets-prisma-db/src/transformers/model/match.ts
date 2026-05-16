@@ -4,9 +4,10 @@ import type {
     Prisma,
 } from '@prisma/client';
 import { Transformer } from '../transformer';
-import { OmitId } from 'brackets-manager';
+import { OmitId } from 'brackets-model';
 import { MatchStatusTransformer, ParticipantMatchResultTransformer } from '..';
 import type { MatchExtrasInput, MatchWithExtra } from '../../types';
+import { toPrismaId } from '../../prisma-id';
 
 type PrismaMatchWithRelations = PrismaMatch & {
     opponent1Result: PrismaParticipantMatchResult | null;
@@ -98,9 +99,9 @@ export const MatchTransformer = {
 
         return {
             status: MatchStatusTransformer.to(input.status),
-            stageId: input.stage_id,
-            groupId: input.group_id,
-            roundId: input.round_id,
+            stageId: toPrismaId(input.stage_id),
+            groupId: toPrismaId(input.group_id),
+            roundId: toPrismaId(input.round_id),
             number: input.number,
             childCount: input.child_count,
             extra: extra ?? null,

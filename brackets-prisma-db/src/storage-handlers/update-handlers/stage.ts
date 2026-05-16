@@ -1,4 +1,4 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import {
     GrandFinalTypeTransformer,
     RoundRobinModeTransformer,
@@ -6,25 +6,26 @@ import {
     StageTypeTransformer,
 } from '../../transformers';
 import { PrismaClient } from '@prisma/client';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleStageUpdate(
     prisma: PrismaClient,
-    filter: Partial<DataTypes['stage']> | number,
+    filter: Partial<DataTypes['stage']> | Id,
     value: Partial<DataTypes['stage']> | DataTypes['stage'],
 ): Promise<boolean> {
-    if (typeof filter !== 'number') {
+    if (!isModelId(filter)) {
         return false;
     }
 
-    return prisma.stage
-        .update({
+    try {
+        await prisma.stage.update({
             where: {
-                id: filter,
+                id: toPrismaId(filter),
             },
             data: {
                 name: value.name,
                 number: value.number,
-                tournamentId: value.tournament_id,
+                tournamentId: toPrismaId(value.tournament_id),
                 type: value.type
                     ? StageTypeTransformer.to(value.type)
                     : undefined,
@@ -62,7 +63,10 @@ export async function handleStageUpdate(
                       }
                     : undefined,
             },
-        })
-        .then(() => true)
-        .catch(() => false);
+        });
+
+        return true;
+    } catch {
+        return false;
+    }
 }

@@ -1,40 +1,47 @@
-import { DataTypes } from 'brackets-manager/dist/types';
+import { DataTypes, Id } from 'brackets-model';
 import { PrismaClient } from '@prisma/client';
+import { isModelId, toPrismaId } from '../../prisma-id';
 
 export async function handleGroupUpdate(
     prisma: PrismaClient,
-    filter: Partial<DataTypes['group']> | number,
+    filter: Partial<DataTypes['group']> | Id,
     value: Partial<DataTypes['group']> | DataTypes['group'],
 ): Promise<boolean> {
-    if (typeof filter === 'number') {
+    if (isModelId(filter)) {
         // Update by Id
-        return prisma.group
-            .update({
+        try {
+            await prisma.group.update({
                 where: {
-                    id: filter,
+                    id: toPrismaId(filter),
                 },
                 data: {
                     number: value.number,
-                    stageId: value.stage_id,
+                    stageId: toPrismaId(value.stage_id),
                 },
-            })
-            .then(() => true)
-            .catch(() => false);
+            });
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     // Update by filter
-    return prisma.group
-        .updateMany({
+    try {
+        await prisma.group.updateMany({
             where: {
-                id: filter.id,
+                id: toPrismaId(filter.id),
                 number: filter.number,
-                stageId: filter.stage_id,
+                stageId: toPrismaId(filter.stage_id),
             },
             data: {
                 number: value.number,
-                stageId: value.stage_id,
+                stageId: toPrismaId(value.stage_id),
             },
-        })
-        .then(() => true)
-        .catch(() => false);
+        });
+
+        return true;
+    } catch {
+        return false;
+    }
 }

@@ -17,6 +17,8 @@ export const MatchStatusTransformer = {
                 return Prisma.MatchStatus.COMPLETED;
             case Status.Archived:
                 return Prisma.MatchStatus.ARCHIVED;
+            case Status.GameCancelled:
+                return Prisma.MatchStatus.GAME_CANCELLED;
         }
     },
     from(status) {
@@ -33,6 +35,8 @@ export const MatchStatusTransformer = {
                 return Status.Completed;
             case Prisma.MatchStatus.ARCHIVED:
                 return Status.Archived;
+            case Prisma.MatchStatus.GAME_CANCELLED:
+                return Status.GameCancelled;
         }
     },
 } satisfies Transformer<Status, Prisma.MatchStatus>;
