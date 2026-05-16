@@ -1,5 +1,5 @@
 import * as rfdc from 'rfdc';
-import { CrudInterface, OmitId, Table, Database } from 'brackets-manager';
+import { CrudInterface, OmitId, Table, Database } from 'brackets-model';
 
 const clone = rfdc();
 
