@@ -1,6 +1,6 @@
 import * as rfdc from 'rfdc';
 import { JsonDB } from 'node-json-db';
-import { CrudInterface, Table } from 'brackets-manager';
+import { CrudInterface, Table } from 'brackets-model';
 
 const clone = rfdc();
 
