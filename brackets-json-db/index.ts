@@ -228,11 +228,20 @@ export class JsonDatabase implements CrudInterface {
             }
         }
 
-        const values = this.internal.filter<{ id: number }>(JsonDatabase.makePath(table), this.makeFilter(arg));
-        if (!values) return false;
+        try {
+            const values = this.internal.filter<{ id: number }>(JsonDatabase.makePath(table), this.makeFilter(arg));
+            if (!values) return false;
 
-        values.forEach(v => this.internal.push(JsonDatabase.makeArrayIndexPath(table, v.id), value, false));
-        return true;
+            values.forEach((v) => {
+                const index = this.internal.getIndex(JsonDatabase.makePath(table), v.id);
+                if (index !== -1)
+                    this.internal.push(JsonDatabase.makeArrayIndexPath(table, index), value, false);
+            });
+
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**

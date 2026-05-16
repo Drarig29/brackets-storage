@@ -29,6 +29,7 @@
     ],
     "scripts": {
         "build": "tsc",
+        "test": "node --test ../test/implementations/prisma.test.js",
         "prepare": "npm run build",
         "prepublishOnly": "npm run build"
     },
