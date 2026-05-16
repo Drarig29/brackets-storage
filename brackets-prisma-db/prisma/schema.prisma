@@ -69,6 +69,8 @@ enum MatchStatus {
   COMPLETED
   // At least one participant completed his following match.
   ARCHIVED
+  // The match game was cancelled.
+  GAME_CANCELLED
 }
 
 // The results of a participant in a match.
